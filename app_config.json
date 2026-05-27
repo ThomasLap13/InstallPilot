@@ -1,0 +1,115 @@
+{
+  "apps": [
+    {
+      "id": "obs",
+      "names": {"fr": "OBS Studio", "en": "OBS Studio"},
+      "short_name": "OBS",
+      "color": "#1f5bb5",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NHB6J8HPMF1",
+      "official_url": "https://obsproject.com/download",
+      "winget_id": "OBSProject.OBSStudio",
+      "check_paths": [
+        "C:/Program Files/obs-studio/bin/64bit/obs64.exe",
+        "C:/Program Files (x86)/obs-studio/bin/64bit/obs64.exe"
+      ]
+    },
+    {
+      "id": "steam",
+      "names": {"fr": "Steam", "en": "Steam"},
+      "short_name": "STEAM",
+      "color": "#0e4d88",
+      "official_url": "https://store.steampowered.com/about/",
+      "winget_id": "Valve.Steam",
+      "check_paths": [
+        "C:/Program Files (x86)/Steam/Steam.exe",
+        "C:/Program Files/Steam/Steam.exe"
+      ]
+    },
+    {
+      "id": "epic",
+      "names": {"fr": "Epic Games Launcher", "en": "Epic Games Launcher"},
+      "short_name": "EPIC",
+      "color": "#161616",
+      "official_url": "https://www.epicgames.com/store/en-US/download",
+      "winget_id": "EpicGames.EpicGamesLauncher",
+      "check_paths": [
+        "C:/Program Files (x86)/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe",
+        "C:/Program Files/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe"
+      ]
+    },
+    {
+      "id": "chrome",
+      "names": {"fr": "Google Chrome", "en": "Google Chrome"},
+      "short_name": "GCH",
+      "color": "#db4437",
+      "official_url": "https://www.google.com/chrome/",
+      "winget_id": "Google.Chrome",
+      "check_paths": [
+        "C:/Program Files/Google/Chrome/Application/chrome.exe",
+        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+      ]
+    },
+    {
+      "id": "discord",
+      "names": {"fr": "Discord", "en": "Discord"},
+      "short_name": "DSC",
+      "color": "#5865f2",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH516QQ",
+      "official_url": "https://discord.com/download",
+      "winget_id": "Discord.Discord",
+      "check_paths": [
+        "C:/Users/%USERNAME%/AppData/Local/Discord/app-*/Discord.exe",
+        "C:/Program Files/Discord/Discord.exe"
+      ]
+    },
+    {
+      "id": "vscode",
+      "names": {"fr": "Visual Studio Code", "en": "Visual Studio Code"},
+      "short_name": "VS",
+      "color": "#0067b8",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1",
+      "official_url": "https://code.visualstudio.com/Download",
+      "winget_id": "Microsoft.VisualStudioCode",
+      "check_paths": [
+        "C:/Program Files/Microsoft VS Code/Code.exe",
+        "C:/Program Files (x86)/Microsoft VS Code/Code.exe"
+      ]
+    },
+    {
+      "id": "antigravity",
+      "names": {"fr": "Antigravity", "en": "Antigravity"},
+      "short_name": "ANT",
+      "color": "#009688",
+      "official_url": "https://www.example.com/antigravity",
+      "check_paths": [
+        "C:/Program Files/Antigravity/Antigravity.exe",
+        "C:/Program Files (x86)/Antigravity/Antigravity.exe"
+      ]
+    },
+    {
+      "id": "notion",
+      "names": {"fr": "Notion", "en": "Notion"},
+      "short_name": "NOT",
+      "color": "#000000",
+      "store_url": "ms-windows-store://pdp/?ProductId=9MZHT89HP7PH",
+      "official_url": "https://www.notion.so/desktop",
+      "winget_id": "Notion.Notion",
+      "check_paths": [
+        "C:/Users/%USERNAME%/AppData/Local/Programs/Notion/Notion.exe"
+      ]
+    },
+    {
+      "id": "keepass",
+      "names": {"fr": "KeePass", "en": "KeePass"},
+      "short_name": "KPS",
+      "color": "#3f51b5",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4R1W1",
+      "official_url": "https://keepass.info/download.html",
+      "winget_id": "KeePass.KeePass",
+      "check_paths": [
+        "C:/Program Files/KeePass Password Safe 2/KeePass.exe",
+        "C:/Program Files (x86)/KeePass Password Safe 2/KeePass.exe"
+      ]
+    }
+  ]
+}
