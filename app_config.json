@@ -1,25 +1,122 @@
 {
   "apps": [
     {
-      "id": "obs",
-      "names": {"fr": "OBS Studio", "en": "OBS Studio"},
-      "short_name": "OBS",
-      "color": "#1f5bb5",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NHB6J8HPMF1",
-      "official_url": "https://obsproject.com/download",
-      "winget_id": "OBSProject.OBSStudio",
+      "id": "chrome",
+      "names": {"fr": "Google Chrome", "en": "Google Chrome"},
+      "short_name": "GCH",
+      "color": "#4285f4",
+      "icon_path": "icons/chrome.png",
+      "official_url": "https://www.google.com/intl/fr/chrome/",
+      "download_url": "https://dl.google.com/chrome/install/ChromeSetup.exe",
+      "winget_id": "Google.Chrome",
+      "category": "web",
+      "registry_names": ["Google Chrome"],
       "check_paths": [
-        "C:/Program Files/obs-studio/bin/64bit/obs64.exe",
-        "C:/Program Files (x86)/obs-studio/bin/64bit/obs64.exe"
+        "C:/Program Files/Google/Chrome/Application/chrome.exe",
+        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
+        "%LOCALAPPDATA%/Google/Chrome/Application/chrome.exe"
+      ]
+    },
+    {
+      "id": "firefox",
+      "names": {"fr": "Mozilla Firefox", "en": "Mozilla Firefox"},
+      "short_name": "FF",
+      "color": "#FF7139",
+      "icon_path": "icons/firefox.png",
+      "official_url": "https://www.mozilla.org/firefox/download/",
+      "download_url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=fr",
+      "winget_id": "Mozilla.Firefox",
+      "category": "web",
+      "registry_names": ["Mozilla Firefox"],
+      "check_paths": [
+        "C:/Program Files/Mozilla Firefox/firefox.exe",
+        "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
+      ]
+    },
+    {
+      "id": "brave",
+      "names": {"fr": "Brave", "en": "Brave"},
+      "short_name": "BRV",
+      "color": "#FB542B",
+      "icon_path": "icons/brave.png",
+      "official_url": "https://brave.com/download/",
+      "winget_id": "Brave.Brave",
+      "category": "web",
+      "registry_names": ["Brave"],
+      "check_paths": [
+        "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe",
+        "%LOCALAPPDATA%/BraveSoftware/Brave-Browser/Application/brave.exe"
+      ]
+    },
+    {
+      "id": "discord",
+      "names": {"fr": "Discord", "en": "Discord"},
+      "short_name": "DSC",
+      "color": "#5865f2",
+      "icon_path": "icons/discord.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH516QQ",
+      "official_url": "https://discord.com/download",
+      "download_url": "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x86",
+      "winget_id": "Discord.Discord",
+      "category": "messaging",
+      "registry_names": ["Discord"],
+      "appx_names": ["Discord.Discord"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Discord/app-*/Discord.exe",
+        "C:/Program Files/Discord/Discord.exe",
+        "%LOCALAPPDATA%/Packages/Discord.Discord_*/app-*/Discord.exe"
+      ]
+    },
+    {
+      "id": "teams",
+      "names": {"fr": "Microsoft Teams", "en": "Microsoft Teams"},
+      "short_name": "MST",
+      "color": "#6264A7",
+      "icon_path": "icons/teams.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9MSPC6MP8FM4",
+      "official_url": "https://www.microsoft.com/microsoft-teams/download-app",
+      "winget_id": "Microsoft.Teams",
+      "category": "messaging",
+      "registry_names": ["Microsoft Teams"],
+      "appx_names": ["MSTeams", "Microsoft.Teams"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Microsoft/Teams/current/Teams.exe",
+        "%APPDATA%/Microsoft/Teams/current/Teams.exe",
+        "C:/Program Files/Microsoft/Teams/current/Teams.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/MicrosoftTeams.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/ms-teams.exe",
+        "%LOCALAPPDATA%/Packages/MSTeams_*/*"
+      ]
+    },
+    {
+      "id": "whatsapp",
+      "names": {"fr": "WhatsApp", "en": "WhatsApp"},
+      "short_name": "WA",
+      "color": "#25D366",
+      "icon_path": "icons/whatsapp.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NKSQGP7F2NH",
+      "official_url": "https://www.whatsapp.com/download",
+      "winget_id": "9NKSQGP7F2NH",
+      "category": "messaging",
+      "registry_names": ["WhatsApp"],
+      "appx_names": ["5319275A.WhatsAppDesktop"],
+      "check_paths": [
+        "%LOCALAPPDATA%/WhatsApp/WhatsApp.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/WhatsApp.exe",
+        "%LOCALAPPDATA%/Packages/5319275A.WhatsAppDesktop_*/"
       ]
     },
     {
       "id": "steam",
       "names": {"fr": "Steam", "en": "Steam"},
       "short_name": "STEAM",
-      "color": "#0e4d88",
+      "color": "#1b2838",
+      "icon_path": "icons/steam.png",
       "official_url": "https://store.steampowered.com/about/",
+      "download_url": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
       "winget_id": "Valve.Steam",
+      "category": "games",
+      "registry_names": ["Steam"],
       "check_paths": [
         "C:/Program Files (x86)/Steam/Steam.exe",
         "C:/Program Files/Steam/Steam.exe"
@@ -29,50 +126,102 @@
       "id": "epic",
       "names": {"fr": "Epic Games Launcher", "en": "Epic Games Launcher"},
       "short_name": "EPIC",
-      "color": "#161616",
-      "official_url": "https://www.epicgames.com/store/en-US/download",
+      "color": "#2a2a2a",
+      "icon_path": "icons/epic.png",
+      "official_url": "https://store.epicgames.com/en-US/download",
       "winget_id": "EpicGames.EpicGamesLauncher",
+      "category": "games",
+      "registry_names": ["Epic Games Launcher", "Epic Games"],
       "check_paths": [
         "C:/Program Files (x86)/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe",
         "C:/Program Files/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe"
       ]
     },
     {
-      "id": "chrome",
-      "names": {"fr": "Google Chrome", "en": "Google Chrome"},
-      "short_name": "GCH",
-      "color": "#db4437",
-      "official_url": "https://www.google.com/chrome/",
-      "winget_id": "Google.Chrome",
+      "id": "obs",
+      "names": {"fr": "OBS Studio", "en": "OBS Studio"},
+      "short_name": "OBS",
+      "color": "#1f5bb5",
+      "icon_path": "icons/obs.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NHB6J8HPMF1",
+      "official_url": "https://obsproject.com/download",
+      "download_resolver": {"type": "github", "owner": "obsproject", "repo": "obs-studio", "pattern": "OBS-Studio-.*-Windows-Installer\\.exe"},
+      "winget_id": "OBSProject.OBSStudio",
+      "category": "media",
+      "registry_names": ["OBS Studio"],
+      "appx_names": ["OBSProject.OBSStudio"],
       "check_paths": [
-        "C:/Program Files/Google/Chrome/Application/chrome.exe",
-        "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe"
+        "C:/Program Files/obs-studio/bin/64bit/obs64.exe",
+        "C:/Program Files (x86)/obs-studio/bin/64bit/obs64.exe",
+        "%LOCALAPPDATA%/Programs/obs-studio/bin/64bit/obs64.exe",
+        "%LOCALAPPDATA%/Packages/OBSProject.OBSStudio_*/"
       ]
     },
     {
-      "id": "discord",
-      "names": {"fr": "Discord", "en": "Discord"},
-      "short_name": "DSC",
-      "color": "#5865f2",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH516QQ",
-      "official_url": "https://discord.com/download",
-      "winget_id": "Discord.Discord",
+      "id": "vlc",
+      "names": {"fr": "VLC media player", "en": "VLC media player"},
+      "short_name": "VLC",
+      "color": "#FF8800",
+      "icon_path": "icons/vlc.png",
+      "official_url": "https://www.videolan.org/vlc/download-windows.html",
+      "download_resolver": {"type": "vlc"},
+      "winget_id": "VideoLAN.VLC",
+      "category": "media",
+      "registry_names": ["VLC media player"],
       "check_paths": [
-        "C:/Users/%USERNAME%/AppData/Local/Discord/app-*/Discord.exe",
-        "C:/Program Files/Discord/Discord.exe"
+        "C:/Program Files/VideoLAN/VLC/vlc.exe",
+        "C:/Program Files (x86)/VideoLAN/VLC/vlc.exe"
       ]
     },
     {
-      "id": "vscode",
-      "names": {"fr": "Visual Studio Code", "en": "Visual Studio Code"},
-      "short_name": "VS",
-      "color": "#0067b8",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1",
-      "official_url": "https://code.visualstudio.com/Download",
-      "winget_id": "Microsoft.VisualStudioCode",
+      "id": "spotify",
+      "names": {"fr": "Spotify", "en": "Spotify"},
+      "short_name": "SPT",
+      "color": "#1DB954",
+      "icon_path": "icons/spotify.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NCBCSZSJRSB",
+      "official_url": "https://www.spotify.com/download/windows/",
+      "download_url": "https://download.scdn.co/SpotifySetup.exe",
+      "winget_id": "Spotify.Spotify",
+      "category": "media",
+      "registry_names": ["Spotify"],
+      "appx_names": ["SpotifyAB.SpotifyMusic"],
       "check_paths": [
-        "C:/Program Files/Microsoft VS Code/Code.exe",
-        "C:/Program Files (x86)/Microsoft VS Code/Code.exe"
+        "%APPDATA%/Spotify/Spotify.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/Spotify.exe",
+        "%LOCALAPPDATA%/Packages/SpotifyAB.SpotifyMusic_*/"
+      ]
+    },
+    {
+      "id": "notion",
+      "names": {"fr": "Notion", "en": "Notion"},
+      "short_name": "NOT",
+      "color": "#191919",
+      "icon_path": "icons/notion.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9MZHT89HP7PH",
+      "official_url": "https://www.notion.so/desktop",
+      "winget_id": "Notion.Notion",
+      "category": "productivity",
+      "registry_names": ["Notion"],
+      "appx_names": ["Notion.Notion"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Programs/Notion/Notion.exe",
+        "%LOCALAPPDATA%/Packages/Notion.Notion_*/"
+      ]
+    },
+    {
+      "id": "libreoffice",
+      "names": {"fr": "LibreOffice", "en": "LibreOffice"},
+      "short_name": "LO",
+      "color": "#18A303",
+      "icon_path": "icons/libreoffice.png",
+      "official_url": "https://www.libreoffice.org/download/download-libreoffice/",
+      "winget_id": "TheDocumentFoundation.LibreOffice",
+      "category": "productivity",
+      "registry_names": ["LibreOffice"],
+      "check_paths": [
+        "C:/Program Files/LibreOffice/program/soffice.exe",
+        "C:/Program Files (x86)/LibreOffice/program/soffice.exe"
       ]
     },
     {
@@ -80,35 +229,184 @@
       "names": {"fr": "Antigravity", "en": "Antigravity"},
       "short_name": "ANT",
       "color": "#009688",
-      "official_url": "https://www.example.com/antigravity",
+      "icon_path": "icons/antigravity.png",
+      "official_url": "https://antigravity.app/download",
+      "category": "productivity",
+      "registry_names": ["Antigravity"],
       "check_paths": [
         "C:/Program Files/Antigravity/Antigravity.exe",
-        "C:/Program Files (x86)/Antigravity/Antigravity.exe"
-      ]
-    },
-    {
-      "id": "notion",
-      "names": {"fr": "Notion", "en": "Notion"},
-      "short_name": "NOT",
-      "color": "#000000",
-      "store_url": "ms-windows-store://pdp/?ProductId=9MZHT89HP7PH",
-      "official_url": "https://www.notion.so/desktop",
-      "winget_id": "Notion.Notion",
-      "check_paths": [
-        "C:/Users/%USERNAME%/AppData/Local/Programs/Notion/Notion.exe"
+        "C:/Program Files (x86)/Antigravity/Antigravity.exe",
+        "%LOCALAPPDATA%/Programs/Antigravity/Antigravity.exe",
+        "%LOCALAPPDATA%/Antigravity/Antigravity.exe",
+        "%APPDATA%/Antigravity/Antigravity.exe"
       ]
     },
     {
       "id": "keepass",
       "names": {"fr": "KeePass", "en": "KeePass"},
       "short_name": "KPS",
-      "color": "#3f51b5",
+      "color": "#6cac20",
+      "icon_path": "icons/keepass.png",
       "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4R1W1",
       "official_url": "https://keepass.info/download.html",
       "winget_id": "KeePass.KeePass",
+      "category": "security",
+      "registry_names": ["KeePass Password Safe", "KeePass"],
+      "appx_names": ["DominikReichl.KeePass"],
       "check_paths": [
         "C:/Program Files/KeePass Password Safe 2/KeePass.exe",
-        "C:/Program Files (x86)/KeePass Password Safe 2/KeePass.exe"
+        "C:/Program Files (x86)/KeePass Password Safe 2/KeePass.exe",
+        "%LOCALAPPDATA%/Packages/DominikReichl.KeePass_*/"
+      ]
+    },
+    {
+      "id": "7zip",
+      "names": {"fr": "7-Zip", "en": "7-Zip"},
+      "short_name": "7ZIP",
+      "color": "#009900",
+      "icon_path": "icons/7zip.png",
+      "official_url": "https://www.7-zip.org/download.html",
+      "download_resolver": {"type": "7zip"},
+      "winget_id": "7zip.7zip",
+      "category": "utilities",
+      "registry_names": ["7-Zip"],
+      "check_paths": [
+        "C:/Program Files/7-Zip/7zFM.exe",
+        "C:/Program Files (x86)/7-Zip/7zFM.exe"
+      ]
+    },
+    {
+      "id": "everything",
+      "names": {"fr": "Everything", "en": "Everything"},
+      "short_name": "EVR",
+      "color": "#1C5FB5",
+      "icon_path": "icons/everything.png",
+      "official_url": "https://www.voidtools.com/downloads/",
+      "winget_id": "voidtools.Everything",
+      "category": "utilities",
+      "registry_names": ["Everything"],
+      "check_paths": [
+        "C:/Program Files/Everything/Everything.exe",
+        "C:/Program Files (x86)/Everything/Everything.exe"
+      ]
+    },
+    {
+      "id": "powertoys",
+      "names": {"fr": "PowerToys", "en": "PowerToys"},
+      "short_name": "PT",
+      "color": "#0078d4",
+      "icon_path": "icons/powertoys.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP89DCGQ3K6VLD",
+      "official_url": "https://github.com/microsoft/PowerToys/releases/latest",
+      "download_resolver": {"type": "github", "owner": "microsoft", "repo": "PowerToys", "pattern": "PowerToysSetup-.*-x64\\.exe"},
+      "winget_id": "Microsoft.PowerToys",
+      "category": "utilities",
+      "registry_names": ["PowerToys", "Microsoft PowerToys", "PowerToys (Preview)"],
+      "appx_names": ["Microsoft.PowerToys"],
+      "check_paths": [
+        "C:/Program Files/PowerToys/PowerToys.exe",
+        "%LOCALAPPDATA%/Microsoft/PowerToys/PowerToys.exe",
+        "%LOCALAPPDATA%/Packages/Microsoft.PowerToys_*/"
+      ]
+    },
+    {
+      "id": "cpuz",
+      "names": {"fr": "CPU-Z", "en": "CPU-Z"},
+      "short_name": "CPZ",
+      "color": "#E8292F",
+      "icon_path": "icons/cpuz.png",
+      "official_url": "https://www.cpuid.com/softwares/cpu-z.html",
+      "winget_id": "CPUID.CPU-Z",
+      "category": "utilities",
+      "registry_names": ["CPU-Z"],
+      "check_paths": [
+        "C:/Program Files/CPUID/CPU-Z/cpuz.exe",
+        "C:/Program Files (x86)/CPUID/CPU-Z/cpuz.exe"
+      ]
+    },
+    {
+      "id": "vscode",
+      "names": {"fr": "Visual Studio Code", "en": "Visual Studio Code"},
+      "short_name": "VS",
+      "color": "#0078d4",
+      "icon_path": "icons/vscode.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1",
+      "official_url": "https://code.visualstudio.com/Download",
+      "download_url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
+      "winget_id": "Microsoft.VisualStudioCode",
+      "category": "dev_tools",
+      "registry_names": ["Microsoft Visual Studio Code", "Visual Studio Code"],
+      "appx_names": ["Microsoft.VisualStudioCode"],
+      "check_paths": [
+        "C:/Program Files/Microsoft VS Code/Code.exe",
+        "C:/Program Files (x86)/Microsoft VS Code/Code.exe",
+        "%LOCALAPPDATA%/Programs/Microsoft VS Code/Code.exe",
+        "%LOCALAPPDATA%/Packages/Microsoft.VisualStudioCode_*/"
+      ]
+    },
+    {
+      "id": "git",
+      "names": {"fr": "Git", "en": "Git"},
+      "short_name": "GIT",
+      "color": "#F05032",
+      "icon_path": "icons/git.png",
+      "official_url": "https://git-scm.com/download/win",
+      "download_resolver": {"type": "github", "owner": "git-for-windows", "repo": "git", "pattern": "Git-.*-64-bit\\.exe"},
+      "winget_id": "Git.Git",
+      "category": "dev_tools",
+      "registry_names": ["Git"],
+      "check_paths": [
+        "C:/Program Files/Git/bin/git.exe",
+        "C:/Program Files (x86)/Git/bin/git.exe"
+      ]
+    },
+    {
+      "id": "python",
+      "names": {"fr": "Python", "en": "Python"},
+      "short_name": "PY",
+      "color": "#3776AB",
+      "icon_path": "icons/python.png",
+      "official_url": "https://www.python.org/downloads/windows/",
+      "winget_id": "Python.Python.3",
+      "category": "dev_tools",
+      "registry_names": ["Python 3", "Python 2"],
+      "check_paths": [
+        "C:/Program Files/Python3*/python.exe",
+        "C:/Program Files (x86)/Python3*/python.exe",
+        "%LOCALAPPDATA%/Programs/Python/Python3*/python.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/python3.exe",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/PythonSoftwareFoundation.Python.3*/python.exe"
+      ]
+    },
+    {
+      "id": "nodejs",
+      "names": {"fr": "Node.js", "en": "Node.js"},
+      "short_name": "NODE",
+      "color": "#339933",
+      "icon_path": "icons/nodejs.png",
+      "official_url": "https://nodejs.org/en/download/",
+      "download_resolver": {"type": "nodejs"},
+      "winget_id": "OpenJS.NodeJS",
+      "category": "dev_tools",
+      "registry_names": ["Node.js"],
+      "check_paths": [
+        "C:/Program Files/nodejs/node.exe",
+        "C:/Program Files (x86)/nodejs/node.exe"
+      ]
+    },
+    {
+      "id": "docker",
+      "names": {"fr": "Docker Desktop", "en": "Docker Desktop"},
+      "short_name": "DCK",
+      "color": "#2496ED",
+      "icon_path": "icons/docker.png",
+      "official_url": "https://www.docker.com/products/docker-desktop/",
+      "download_url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
+      "winget_id": "Docker.DockerDesktop",
+      "category": "dev_tools",
+      "registry_names": ["Docker Desktop"],
+      "check_paths": [
+        "C:/Program Files/Docker/Docker/Docker Desktop.exe"
       ]
     }
   ]

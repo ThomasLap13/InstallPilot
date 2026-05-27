@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256" width="256" height="256">
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1" gradientUnits="objectBoundingBox">
+      <stop offset="0%"   stop-color="#38bdf8"/>
+      <stop offset="100%" stop-color="#0369a1"/>
+    </linearGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="256" height="256" rx="52" ry="52" fill="url(#bg)"/>
+
+  <!-- Left tail fin (top of shaft) -->
+  <polygon points="128,40 60,90 117,90" fill="white"/>
+  <!-- Right tail fin -->
+  <polygon points="128,40 139,90 196,90" fill="white"/>
+
+  <!-- Vertical shaft (body of plane = arrow shaft) -->
+  <rect x="117" y="40" width="22" height="110" fill="white"/>
+
+  <!-- Wings -->
+  <rect x="28" y="100" width="200" height="22" rx="5" fill="white"/>
+
+  <!-- Arrowhead pointing down -->
+  <polygon points="128,200 68,150 188,150" fill="white"/>
+
+  <!-- Landing bar -->
+  <rect x="72" y="214" width="112" height="12" rx="6" fill="white" fill-opacity="0.88"/>
+</svg>
