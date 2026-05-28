@@ -1,6 +1,29 @@
+# Python
 __pycache__/
 *.py[cod]
 *.pyo
-dist/
+*.pyd
+
+# Build & distribution
 build/
+dist/
 *.spec
+
+# Windows metadata (dev artifacts)
+*.winmd
+
+# IDE & tools
+.vscode/
+.idea/
+*.sublime-project
+
+# Claude Code
+.claude/
+
+# User settings generated at runtime
+settings.json
+InstallPilot_Installer.bat
+
+# OS
+Thumbs.db
+.DS_Store

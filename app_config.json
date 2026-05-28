@@ -193,6 +193,60 @@
       ]
     },
     {
+      "id": "apple_music",
+      "names": {"fr": "Apple Music", "en": "Apple Music"},
+      "short_name": "APM",
+      "color": "#FC3C44",
+      "icon_path": "icons/apple_music.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9PFHDD62MXS1",
+      "official_url": "https://www.apple.com/apple-music/",
+      "winget_id": "Apple.Music",
+      "category": "media",
+      "registry_names": ["Apple Music"],
+      "appx_names": ["AppleInc.AppleMusicWin"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Packages/AppleInc.AppleMusicWin_*/",
+        "%LOCALAPPDATA%/Packages/AppleInc.AppleMusic_*/",
+        "C:/Program Files/Apple/Music/Music.exe"
+      ]
+    },
+    {
+      "id": "deezer",
+      "names": {"fr": "Deezer", "en": "Deezer"},
+      "short_name": "DZR",
+      "color": "#A238FF",
+      "icon_path": "icons/deezer.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH6J7VV",
+      "official_url": "https://www.deezer.com/en/download",
+      "winget_id": "Deezer.Deezer",
+      "category": "media",
+      "registry_names": ["Deezer"],
+      "appx_names": ["Deezer.62021768415AF", "Deezer.Deezer"],
+      "check_paths": [
+        "C:/Program Files/WindowsApps/Deezer.*/",
+        "%LOCALAPPDATA%/Packages/Deezer.*/",
+        "%LOCALAPPDATA%/Programs/Deezer/Deezer.exe",
+        "C:/Program Files/Deezer/Deezer.exe"
+      ]
+    },
+    {
+      "id": "plex",
+      "names": {"fr": "Plex", "en": "Plex"},
+      "short_name": "PLEX",
+      "color": "#E5A00D",
+      "icon_path": "icons/plex.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP9CDQW6ML4NQN",
+      "official_url": "https://www.plex.tv/media-server-downloads/#plex-app",
+      "winget_id": "Plex.Plex",
+      "category": "media",
+      "registry_names": ["Plex"],
+      "check_paths": [
+        "C:/Program Files/Plex/Plex/Plex.exe",
+        "%LOCALAPPDATA%/Plex/Plex.exe",
+        "%LOCALAPPDATA%/Programs/Plex/Plex.exe"
+      ]
+    },
+    {
       "id": "notion",
       "names": {"fr": "Notion", "en": "Notion"},
       "short_name": "NOT",
@@ -222,6 +276,23 @@
       "check_paths": [
         "C:/Program Files/LibreOffice/program/soffice.exe",
         "C:/Program Files (x86)/LibreOffice/program/soffice.exe"
+      ]
+    },
+    {
+      "id": "outlook_new",
+      "names": {"fr": "Outlook", "en": "Outlook"},
+      "short_name": "OLK",
+      "color": "#0078d4",
+      "icon_path": "icons/outlook_new.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9NRX63209R7B",
+      "official_url": "https://www.microsoft.com/en-us/microsoft-365/outlook/email-and-calendar-software-microsoft-outlook",
+      "winget_id": "Microsoft.OutlookForWindows",
+      "category": "productivity",
+      "registry_names": ["Microsoft Outlook", "Outlook"],
+      "appx_names": ["Microsoft.OutlookForWindows"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Packages/Microsoft.OutlookForWindows_*/",
+        "%LOCALAPPDATA%/Microsoft/WindowsApps/olk.exe"
       ]
     },
     {
@@ -307,6 +378,39 @@
         "C:/Program Files/PowerToys/PowerToys.exe",
         "%LOCALAPPDATA%/Microsoft/PowerToys/PowerToys.exe",
         "%LOCALAPPDATA%/Packages/Microsoft.PowerToys_*/"
+      ]
+    },
+    {
+      "id": "lenovo_vantage",
+      "names": {"fr": "Lenovo Vantage", "en": "Lenovo Vantage"},
+      "short_name": "LNV",
+      "color": "#E2231A",
+      "icon_path": "icons/lenovo_vantage.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9WZDNCRFJ4MV",
+      "official_url": "https://www.lenovo.com/us/en/software/vantage",
+      "winget_id": "Lenovo.LenovoVantage",
+      "category": "utilities",
+      "registry_names": ["Lenovo Vantage"],
+      "appx_names": ["E046963F.LenovoCompanion"],
+      "check_paths": [
+        "%LOCALAPPDATA%/Packages/E046963F.LenovoCompanion_*/",
+        "C:/Program Files (x86)/Lenovo/VantageService/*/LenovoVantageService.exe"
+      ]
+    },
+    {
+      "id": "nvidia_app",
+      "names": {"fr": "NVIDIA App", "en": "NVIDIA App"},
+      "short_name": "NVD",
+      "color": "#76B900",
+      "icon_path": "icons/nvidia_app.png",
+      "official_url": "https://www.nvidia.com/en-us/software/nvidia-app/",
+      "winget_id": "Nvidia.NvidiaApp",
+      "category": "utilities",
+      "registry_names": ["NVIDIA App"],
+      "check_paths": [
+        "C:/Program Files/NVIDIA Corporation/NVIDIA App/CEF/NVIDIA App.exe",
+        "C:/Program Files/NVIDIA Corporation/NVIDIA App/CEF/NvidiaApp.exe",
+        "C:/Program Files/NVIDIA Corporation/NVIDIA App/DarkModeCheck.exe"
       ]
     },
     {

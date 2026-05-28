@@ -1,145 +1,67 @@
-# 🚀 InstallPilot
+# InstallPilot
 
-Une application Windows légère pour vérifier si vos logiciels sont installés et lancer leur téléchargement depuis le Microsoft Store ou le site officiel.
+**Réinstallez tous vos logiciels essentiels en quelques clics.**
 
----
-
-## ✨ Fonctions
-
-- 🌍 Interface en français et en anglais.
-- 📦 Applications pré-configurées :
-  - OBS Studio
-  - Epic Games
-  - Steam
-  - Chrome
-  - Discord
-  - Visual Studio Code
-  - Antigravity
-  - Notion
-  - KeePass
-- 🔍 Détection automatique des applications déjà installées (chemins + registre Windows).
-- 🎨 Mode sombre / mode clair (style Windows 11).
-- ⚡ Ouverture du Microsoft Store ou du site officiel d'un clic.
-- 🛠️ Configuration facile via `app_config.json`.
+Nouveau PC ? Réinstallation Windows ? InstallPilot détecte ce qui est déjà là, et installe le reste — directement depuis le Microsoft Store ou le site officiel, sans chercher, sans se tromper de version.
 
 ---
 
-## ▶️ Lancement
+## Ce que ça fait
+
+- Affiche d'un coup d'œil ce qui est installé et ce qui manque
+- Lance l'installation des apps sélectionnées en un clic
+- Supporte le Microsoft Store **et** les installeurs EXE classiques
+- Interface en **français** et en **anglais**
+- Thème sombre ou clair, couleur d'accentuation Windows automatique
+- Fonctionne sans installation — un seul fichier `.exe`
+
+---
+
+## Applications incluses
+
+| Catégorie | Applications |
+|---|---|
+| Navigateurs | Chrome, Firefox, Brave |
+| Messagerie | Discord, Teams, WhatsApp |
+| Jeux | Steam, Epic Games |
+| Multimédia | Spotify, Apple Music, Deezer, Plex, VLC, OBS Studio |
+| Productivité | Outlook, Notion, LibreOffice, Antigravity |
+| Sécurité | KeePass |
+| Utilitaires | PowerToys, 7-Zip, Everything, Lenovo Vantage, NVIDIA App, CPU-Z |
+| Dev | VS Code, Git, Python, Node.js, Docker |
+
+---
+
+## Téléchargement
+
+Téléchargez la dernière version : **`InstallPilot.exe`** dans les [Releases](../../releases).
+
+Aucune installation requise. Double-cliquez et c'est parti.
+
+---
+
+## Utilisation
+
+1. Lancez `InstallPilot.exe`
+2. Les apps déjà installées apparaissent grisées avec une coche ✓
+3. Cochez ce que vous voulez installer
+4. Cliquez sur **Obtenir votre sélection**
+
+Pour les apps disponibles sur le Store et en EXE, choisissez la source avec le toggle à droite de chaque ligne.
+
+---
+
+## Ajouter une application
+
+Ouvrez `app_config.json` et ajoutez une entrée. Les seuls champs obligatoires sont `id`, `names`, `category`, et au moins une source (`store_url`, `official_url` ou `winget_id`).
+
+---
+
+## Construire l'exécutable
 
 ```powershell
-python main.py
+pip install pyinstaller customtkinter pywinstyles pillow
+pyinstaller main.spec
 ```
 
-### Prérequis
-
-- Python 3.10+
-- Aucune dépendance externe (stdlib uniquement)
-
----
-
-## 🖼️ Icônes des applications
-
-Les icônes sont incluses dans le dépôt (`icons/`).
-
-Pour les re-télécharger :
-
-```powershell
-python download_icons.py
-```
-
----
-
-## 📦 Création d'un exécutable portable
-
-### Installation de PyInstaller
-
-```powershell
-pip install pyinstaller
-```
-
-### Génération du binaire
-
-```powershell
-pyinstaller --onefile --windowed --add-data "app_config.json;." --add-data "logo.png;." --add-data "icons;icons" main.py
-```
-
-Le binaire se trouvera dans :
-
-```text
-dist\main.exe
-```
-
----
-
-## ⚙️ Personnalisation des applications
-
-Éditez le fichier :
-
-```text
-app_config.json
-```
-
-Chaque entrée contient :
-
-| Clé | Description |
-|------|-------------|
-| `id` | Identifiant unique |
-| `names` | Nom en français et en anglais |
-| `color` | Couleur de l'icône de remplacement (hex) |
-| `icon_path` | Chemin vers l'icône PNG dans `icons/` |
-| `store_url` | Lien Microsoft Store *(optionnel)* |
-| `official_url` | Lien vers le site officiel |
-| `winget_id` | Identifiant Winget *(optionnel)* |
-| `registry_names` | Noms dans le registre Windows |
-| `check_paths` | Chemins ou jokers pour détecter l'installation |
-| `category` | Catégorie de l'application |
-
----
-
-## 🗂️ Catégories disponibles
-
-```text
-web
-messaging
-games
-media
-productivity
-security
-utilities
-dev_tools
-other
-```
-
----
-
-## 📁 Structure du projet
-
-```text
-InstallPilot/
-│
-├── main.py
-├── app_config.json
-├── download_icons.py
-├── logo.png
-│
-├── icons/
-│   ├── chrome.png
-│   ├── discord.png
-│   └── ...
-│
-└── dist/
-    └── main.exe
-```
-
----
-
-## ❤️ À propos
-
-InstallPilot a été conçu pour proposer une solution :
-
-- légère ;
-- rapide ;
-- moderne ;
-- portable ;
-
-afin de simplifier l'installation et la gestion des logiciels essentiels sous Windows.
+Le binaire se retrouve dans `dist\InstallPilot.exe`.
