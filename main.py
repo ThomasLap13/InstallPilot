@@ -1,3 +1,4 @@
+import concurrent.futures
 import glob
 import json
 import os
@@ -11,15 +12,60 @@ import urllib.request
 import webbrowser
 import tkinter as tk
 from datetime import datetime
-from tkinter import BooleanVar, Canvas, PhotoImage, StringVar, messagebox
+from tkinter import BooleanVar, Canvas, PhotoImage, StringVar, filedialog, messagebox
 
 import customtkinter as ctk
 
 BASE_DIR      = getattr(sys, "_MEIPASS", os.path.abspath(os.path.dirname(__file__)))
-_icon_cache: dict = {}  # (full_path, size) -> PhotoImage | None
+_icon_cache: dict = {}
 CONFIG_PATH   = os.path.join(BASE_DIR, "app_config.json")
 SETTINGS_DIR  = os.path.join(os.environ.get("APPDATA", BASE_DIR), "InstallPilot")
 SETTINGS_PATH = os.path.join(SETTINGS_DIR, "settings.json")
+_saved_selections: dict = {}  # persists across theme/lang restarts within the same process
+
+_GITHUB_REPO = "ThomasLap13/InstallPilot"
+
+def _get_app_version() -> str:
+    ver_file = os.path.join(BASE_DIR, "version.txt")
+    if os.path.exists(ver_file):
+        try:
+            return open(ver_file, encoding="utf-8").read().strip()
+        except Exception:
+            pass
+    if getattr(sys, "frozen", False):
+        return ""
+    src_dir = os.path.abspath(os.path.dirname(__file__))
+    for cmd in (
+        ["git", "describe", "--tags", "--abbrev=0"],
+        ["git", "log", "-1", "--format=%s"],
+    ):
+        try:
+            r = subprocess.run(cmd, capture_output=True, text=True,
+                               cwd=src_dir, creationflags=subprocess.CREATE_NO_WINDOW,
+                               timeout=3)
+            v = r.stdout.strip()
+            if v:
+                return v
+        except Exception:
+            pass
+    return ""
+
+def _fetch_github_version(callback):
+    def _worker():
+        try:
+            url = f"https://api.github.com/repos/{_GITHUB_REPO}/commits/HEAD"
+            req = urllib.request.Request(url, headers={"User-Agent": "InstallPilot/1.0"})
+            with urllib.request.urlopen(req, context=_SSL_CTX, timeout=5) as r:
+                data = json.load(r)
+            msg = data["commit"]["message"].split("\n")[0].strip()
+            if msg:
+                callback(msg)
+        except Exception:
+            pass
+    threading.Thread(target=_worker, daemon=True).start()
+
+
+APP_VERSION = _get_app_version()
 
 
 def load_settings():
@@ -50,13 +96,11 @@ def _detect_windows_theme() -> str:
         return "dark"
 
 def _get_accent_color() -> str:
-    """Read the real Windows 11 accent color from DWM\\AccentColor (ABGR format)."""
     try:
         import winreg
         key = winreg.OpenKey(winreg.HKEY_CURRENT_USER, r"SOFTWARE\Microsoft\Windows\DWM")
         raw, _ = winreg.QueryValueEx(key, "AccentColor")
         winreg.CloseKey(key)
-        # AccentColor is stored as 0xAABBGGRR
         r = raw & 0xFF
         g = (raw >> 8) & 0xFF
         b = (raw >> 16) & 0xFF
@@ -123,7 +167,7 @@ LANGUAGES = {
         "inst_close":          "Fermer",
         "inst_summary":        "{ok} / {total} installé(s)",
         "inst_save_script":    "Sauvegarder le script (.bat)",
-        "inst_script_saved":   "Script créé sur le Bureau :\n{path}",
+        "inst_script_saved":   "Script créé :\n{path}",
         "inst_open_store":     "Ouverture du Store...",
         "inst_no_url":         "Aucune source disponible",
         "src_store":           "Store",
@@ -173,7 +217,7 @@ LANGUAGES = {
         "inst_close":          "Close",
         "inst_summary":        "{ok} / {total} installed",
         "inst_save_script":    "Save script (.bat)",
-        "inst_script_saved":   "Script saved to Desktop:\n{path}",
+        "inst_script_saved":   "Script saved:\n{path}",
         "inst_open_store":     "Opening Store...",
         "inst_no_url":         "No source available",
         "src_store":           "Store",
@@ -273,6 +317,12 @@ def tr(key, **kw):
 def app_name(app):
     return app["names"].get(lang_code) or next(iter(app["names"].values()), "?")
 
+def app_desc(app) -> str:
+    d = app.get("description", {})
+    if isinstance(d, dict):
+        return d.get(lang_code) or d.get("fr") or d.get("en") or ""
+    return str(d) if d else ""
+
 def category_title(key):
     return CATEGORY_LABELS.get(key, {}).get(lang_code, key.title())
 
@@ -285,10 +335,26 @@ def group_apps_by_category(apps):
 def load_apps():
     try:
         with open(CONFIG_PATH, "r", encoding="utf-8") as f:
-            return json.load(f)["apps"]
+            raw = json.load(f)["apps"]
     except Exception:
         messagebox.showerror("Erreur", tr("error_loading_config"))
         return []
+    valid = []
+    for app in raw:
+        missing = []
+        if not app.get("id"):
+            missing.append("id")
+        if not app.get("names"):
+            missing.append("names")
+        if not app.get("category"):
+            missing.append("category")
+        if not any(app.get(k) for k in ("store_url", "official_url", "download_url", "winget_id", "download_resolver")):
+            missing.append("source")
+        if missing:
+            print(f"[InstallPilot] Skipping app {app.get('id', '?')!r}: missing {', '.join(missing)}", file=sys.stderr)
+        else:
+            valid.append(app)
+    return valid
 
 def resolve_path(path):
     return os.path.expandvars(os.path.expanduser(path))
@@ -299,9 +365,11 @@ def path_matches(pattern):
         return bool(glob.glob(p))
     return os.path.exists(p)
 
-_registry_cache     = None
-_appx_cache         = None
-_winget_store_cache = None  # set of product IDs installed from msstore source
+_registry_cache         = None
+_appx_cache             = None
+_winget_store_cache     = None  # set of Store ProductIds (e.g. XP9CDQW6ML4NQN)
+_winget_installed_cache = None  # set of winget package IDs (e.g. git.git)
+_winget_upgrades_cache  = None  # set of winget IDs with available upgrades
 
 def _get_registry_apps():
     global _registry_cache
@@ -356,34 +424,67 @@ def _get_appx_packages():
         pass
     return _appx_cache
 
-def _get_winget_store_ids():
-    """Run `winget list --source msstore` once and return a set of product IDs."""
-    global _winget_store_cache
+def _load_winget_cache():
+    """Run `winget list` once, populate both Store-ProductId and package-ID caches."""
+    global _winget_store_cache, _winget_installed_cache
     if _winget_store_cache is not None:
-        return _winget_store_cache
-    _winget_store_cache = set()
+        return
+    _winget_store_cache    = set()
+    _winget_installed_cache = set()
     try:
         result = subprocess.run(
-            ["winget", "list", "--source", "msstore"],
+            ["winget", "list", "--accept-source-agreements"],
             capture_output=True, text=True, encoding="utf-8", errors="replace",
-            creationflags=subprocess.CREATE_NO_WINDOW, timeout=15,
+            creationflags=subprocess.CREATE_NO_WINDOW, timeout=20,
         )
         for line in result.stdout.splitlines():
-            # winget columns: Name | Id | Version | Available | Source
-            # The Id column contains the Store ProductId (e.g. XP9CDQW6ML4NQN)
-            parts = line.split()
-            for part in parts:
+            for part in line.split():
+                # Store ProductId: 12+ uppercase alphanumeric chars
                 if re.match(r'^[A-Z0-9]{12,}$', part):
                     _winget_store_cache.add(part.upper())
+                # Winget package ID: Publisher.Package format, no pure version numbers
+                elif ('.' in part
+                      and re.match(r'^[A-Za-z0-9][A-Za-z0-9._-]{4,79}$', part)
+                      and not re.match(r'^[\d.]+$', part)):
+                    _winget_installed_cache.add(part.lower())
     except Exception:
         pass
+
+def _get_winget_store_ids() -> set:
+    _load_winget_cache()
     return _winget_store_cache
+
+def _get_winget_installed() -> set:
+    _load_winget_cache()
+    return _winget_installed_cache
+
+def _load_winget_upgrades_cache():
+    global _winget_upgrades_cache
+    if _winget_upgrades_cache is not None:
+        return
+    _winget_upgrades_cache = set()
+    try:
+        result = subprocess.run(
+            ["winget", "upgrade", "--include-unknown", "--accept-source-agreements"],
+            capture_output=True, text=True, encoding="utf-8", errors="replace",
+            creationflags=subprocess.CREATE_NO_WINDOW, timeout=30,
+        )
+        for line in result.stdout.splitlines():
+            for part in line.split():
+                if ('.' in part
+                        and re.match(r'^[A-Za-z0-9][A-Za-z0-9._-]{4,79}$', part)
+                        and not re.match(r'^[\d.]+$', part)):
+                    _winget_upgrades_cache.add(part.lower())
+    except Exception:
+        pass
+
+def _get_winget_upgrades() -> set:
+    return _winget_upgrades_cache or set()
 
 
 _STORE_MARKERS = ("windowsapps", "\\packages\\")
 
 def _check_store_source(app) -> str:
-    """Return 'store' if this app's ProductId appears in winget msstore list."""
     m = re.search(r'ProductId=([A-Z0-9]+)', app.get("store_url", ""), re.I)
     if m and m.group(1).upper() in _get_winget_store_ids():
         return "store"
@@ -414,6 +515,9 @@ def detect_installation(app):
         pkgs = _get_appx_packages()
         if any(n in pkgs for n in appx_names):
             return True, "store"
+    winget_id = app.get("winget_id")
+    if winget_id and winget_id.lower() in _get_winget_installed():
+        return True, "system"
     return False, None
 
 def is_installed(app):
@@ -469,10 +573,13 @@ def _resolve_download_url(app):
             if m:
                 return "https://www.7-zip.org/" + m.group(1).decode()
         elif rtype == "nodejs":
-            final_url, html = _http_get("https://nodejs.org/dist/latest-lts/")
-            m = re.search(rb'href="(node-v[^"]*-x64\.msi)"', html)
-            if m:
-                return final_url.rstrip("/") + "/" + m.group(1).decode()
+            # Use the official Node.js release index instead of scraping HTML
+            _, data = _http_get("https://nodejs.org/dist/index.json")
+            releases = json.loads(data)
+            lts = [r for r in releases if r.get("lts")]
+            if lts:
+                ver = lts[0]["version"]
+                return f"https://nodejs.org/dist/{ver}/node-{ver}-x64.msi"
     except Exception:
         pass
     return direct
@@ -489,7 +596,7 @@ def _cleanup_installer_temp():
 
 def _cleanup_after_proc(proc, path: str):
     try:
-        proc.wait(timeout=3600)
+        proc.wait(timeout=600)
     except Exception:
         pass
     try:
@@ -507,9 +614,20 @@ def _silent_cmd(dest: str, app: dict) -> list:
     return [dest, "/S"]
 
 def _generate_bat_script(exe_rows: list) -> str:
-    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
-    path    = os.path.join(desktop, "InstallPilot_Installer.bat")
-    lines   = [
+    desktop   = os.path.join(os.path.expanduser("~"), "Desktop")
+    downloads = os.path.join(os.path.expanduser("~"), "Downloads")
+    default_dir = (desktop   if os.path.isdir(desktop)   else
+                   downloads if os.path.isdir(downloads) else
+                   os.path.expanduser("~"))
+    path = filedialog.asksaveasfilename(
+        initialdir=default_dir,
+        initialfile="InstallPilot_Installer.bat",
+        defaultextension=".bat",
+        filetypes=[("Batch script", "*.bat"), ("All files", "*.*")],
+    )
+    if not path:
+        return ""
+    lines = [
         "@echo off",
         "title InstallPilot — Script d'installation",
         f"echo Genere le {datetime.now().strftime('%Y-%m-%d %H:%M')}",
@@ -537,6 +655,71 @@ def _generate_bat_script(exe_rows: list) -> str:
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     return path
+
+
+# ── Tooltip ───────────────────────────────────────────────────────────────────
+
+class Tooltip:
+    _active: "Tooltip | None" = None
+
+    def __init__(self, widget, text: str):
+        if not text:
+            return
+        self._widget = widget
+        self._text   = text
+        self._win    = None
+        self._after  = None
+        widget.bind("<Enter>",   self._on_enter,  add="+")
+        widget.bind("<Leave>",   self._on_leave,  add="+")
+        widget.bind("<Button-1>",self._on_leave,  add="+")
+        widget.bind("<Destroy>", self._destroy,   add="+")
+
+    def _on_enter(self, _=None):
+        self._cancel_after()
+        self._after = self._widget.after(600, self._show)
+
+    def _on_leave(self, _=None):
+        self._cancel_after()
+        self._destroy()
+
+    def _cancel_after(self):
+        if self._after:
+            try:
+                self._widget.after_cancel(self._after)
+            except Exception:
+                pass
+            self._after = None
+
+    def _show(self, _=None):
+        if Tooltip._active and Tooltip._active is not self:
+            Tooltip._active._destroy()
+        try:
+            x = self._widget.winfo_rootx()
+            y = self._widget.winfo_rooty() + self._widget.winfo_height() + 3
+        except Exception:
+            return
+        self._win = tk.Toplevel(self._widget.winfo_toplevel())
+        self._win.wm_overrideredirect(True)
+        self._win.wm_geometry(f"+{x}+{y}")
+        self._win.configure(bg=T["border"])
+        inner = tk.Frame(self._win, bg=T["surface"], padx=9, pady=5)
+        inner.pack(padx=1, pady=1)
+        tk.Label(
+            inner, text=self._text,
+            font=("Segoe UI", 9), fg=T["fg2"], bg=T["surface"],
+            wraplength=260, justify="left",
+        ).pack()
+        Tooltip._active = self
+
+    def _destroy(self, _=None):
+        if self._win:
+            try:
+                self._win.destroy()
+            except Exception:
+                pass
+            self._win = None
+        if Tooltip._active is self:
+            Tooltip._active = None
 
 
 # ── SourceToggle ──────────────────────────────────────────────────────────────
@@ -574,7 +757,7 @@ class SourceToggle:
         img = self._get_store_img()
         self._store_btn = ctk.CTkButton(
             self.widget,
-            text="" if img else "",
+            text="" if img else "",
             image=img,
             font=("Segoe UI", 9) if img else ("Segoe MDL2 Assets", 14),
             width=30, height=20, corner_radius=3,
@@ -629,9 +812,10 @@ class AppRow:
         self._install_source = None
         self._has_both = (bool(app.get("store_url")) and
                           bool(app.get("official_url") or app.get("download_url")))
+        self._update_available = False
         self.frame = ctk.CTkFrame(parent, fg_color=T["bg"], corner_radius=6)
         self._build()
-        self.update_status()
+        # Detection deferred to _finish_refresh (background thread warms caches first)
         for w in (self.frame, self.lbl):
             w.bind("<Enter>", self._hover_on)
             w.bind("<Leave>", self._hover_off)
@@ -692,6 +876,12 @@ class AppRow:
             font=("Segoe UI", 10), width=90, anchor="e")
         self.status_lbl.pack(side="right", padx=(4, 0))
 
+        # Update badge — hidden until _apply_update_badges() runs
+        self._update_badge = ctk.CTkLabel(
+            inner, text="↑", text_color=T["accent"],
+            font=("Segoe UI", 10, "bold"), width=18, anchor="center")
+        # not packed yet
+
         if self._has_both:
             self.source_toggle = SourceToggle(inner, default="store")
             self.source_toggle.widget.pack(side="right", padx=(4, 4))
@@ -703,6 +893,11 @@ class AppRow:
         self.lbl.bind("<Button-1>", self._toggle)
         self.lbl.bind("<Enter>", self._hover_on)
         self.lbl.bind("<Leave>", self._hover_off)
+
+        desc = app_desc(self.app)
+        if desc:
+            Tooltip(self.lbl, desc)
+            Tooltip(self.dot, desc)
 
     def _hover_on(self, *_):
         if not self._installed:
@@ -719,6 +914,11 @@ class AppRow:
 
     def update_status(self):
         self._installed, self._install_source = detect_installation(self.app)
+        self._apply_ui_status()
+
+    def _apply_ui_status(self):
+        self._update_badge.pack_forget()
+        self._update_available = False
         self.lbl.configure(text=app_name(self.app))
         if self._installed:
             self.selected.set(False)
@@ -745,6 +945,14 @@ class AppRow:
             return self.source_toggle.get()
         return "store" if self.app.get("store_url") else "exe"
 
+    def set_update_badge(self, available: bool):
+        self._update_available = available
+        if available and self._installed:
+            if not self._update_badge.winfo_ismapped():
+                self._update_badge.pack(side="right", padx=(0, 2))
+        else:
+            self._update_badge.pack_forget()
+
 
 # ── Fenêtre d'installation ────────────────────────────────────────────────────
 
@@ -752,13 +960,16 @@ class InstallerWindow:
     _W    = 640
     _SPIN = ("|", "/", "—", "\\")
 
-    def __init__(self, parent, exe_rows: list):
-        self.parent     = parent
-        self.exe_rows   = exe_rows
-        self._cancelled = threading.Event()
-        self._cur_proc  = None
-        self._results   = {}
-        self._row_data  = {}
+    def __init__(self, parent, exe_rows: list, on_done=None):
+        self.parent      = parent
+        self.exe_rows    = exe_rows
+        self._on_done_cb = on_done
+        self._cancelled    = threading.Event()
+        self._active_procs: list = []
+        self._procs_lock   = threading.Lock()
+        self._results      = {}
+        self._errors: dict[str, str] = {}
+        self._row_data     = {}
 
         h = 130 + len(exe_rows) * 56 + 110
         self.win = ctk.CTkToplevel(parent)
@@ -768,6 +979,7 @@ class InstallerWindow:
         self.win.configure(fg_color=T["bg"])
         self.win.grab_set()
         self.win.protocol("WM_DELETE_WINDOW", self._on_close_request)
+        self.win.bind("<Escape>", lambda _: self._on_close_request())
 
         try:
             import pywinstyles
@@ -780,7 +992,6 @@ class InstallerWindow:
         threading.Thread(target=self._worker, daemon=True).start()
 
     def _build(self):
-        # Header
         hdr = ctk.CTkFrame(self.win, fg_color=T["surface"], corner_radius=0, height=60)
         hdr.pack(fill="x")
         hdr.pack_propagate(False)
@@ -791,7 +1002,6 @@ class InstallerWindow:
         ctk.CTkFrame(self.win, fg_color=T["border"], height=1,
                      corner_radius=0).pack(fill="x")
 
-        # App rows (scrollable)
         body = ctk.CTkScrollableFrame(
             self.win, fg_color=T["bg"], corner_radius=0,
             scrollbar_button_color=T["scrollbar"],
@@ -824,7 +1034,7 @@ class InstallerWindow:
             ctk.CTkLabel(inner, text=app_name(app), font=("Segoe UI", 11, "bold"),
                          text_color=T["fg"], width=155, anchor="w").pack(side="left")
 
-            pb = ctk.CTkProgressBar(inner, width=190, height=8,
+            pb = ctk.CTkProgressBar(inner, width=170, height=8,
                                     progress_color=T["accent"],
                                     fg_color=T["border"])
             pb.set(0)
@@ -832,7 +1042,7 @@ class InstallerWindow:
 
             status_lbl = ctk.CTkLabel(inner, text=tr("inst_waiting"),
                                       font=("Segoe UI", 10),
-                                      text_color=T["fg3"], width=120, anchor="w")
+                                      text_color=T["fg3"], width=150, anchor="w")
             status_lbl.pack(side="left")
 
             self._row_data[app["id"]] = {
@@ -840,7 +1050,6 @@ class InstallerWindow:
                 "icon_lbl": icon_lbl, "state": "waiting",
             }
 
-        # Footer
         ctk.CTkFrame(self.win, fg_color=T["border"], height=1,
                      corner_radius=0).pack(fill="x")
         footer = ctk.CTkFrame(self.win, fg_color=T["surface2"], corner_radius=0, height=110)
@@ -883,29 +1092,60 @@ class InstallerWindow:
     # ── Worker ────────────────────────────────────────────────────────────────
 
     def _worker(self):
-        total = len(self.exe_rows)
-        for i, row in enumerate(self.exe_rows):
+        total      = len(self.exe_rows)
+        done_count = [0]
+        count_lock = threading.Lock()
+
+        def install_one(row):
+            app_id = row.app["id"]
             if self._cancelled.is_set():
-                self._set_state(row.app["id"], "error", tr("inst_err"))
-                continue
-            self._set_state(row.app["id"], "active", "")
-            app = row.app
-            if app.get("winget_id") or row.get_source() == "store":
-                ok = self._winget_install(row)
+                self._set_state(app_id, "error", tr("inst_err"))
             else:
-                url = _resolve_download_url(app)
-                ok  = self._download_install(row, url) if url else self._open_web(row)
-            self._results[app["id"]] = ok
-            final_text = tr("inst_ok") if ok else tr("inst_err")
-            self._set_state(row.app["id"], "done" if ok else "error", final_text)
-            d, t = i + 1, total
-            self.win.after(0, lambda dv=d, tv=t: self._apply_global(dv, tv))
-        self.win.after(0, self._on_all_done)
+                self._set_state(app_id, "active", "")
+                app = row.app
+                if app.get("winget_id") or row.get_source() == "store":
+                    ok = self._winget_install(row)
+                else:
+                    url = _resolve_download_url(app)
+                    ok  = self._download_install(row, url) if url else self._open_web(row)
+                self._results[app_id] = ok
+                final_text = tr("inst_ok") if ok else (
+                    f"{tr('inst_err')}: {self._errors[app_id]}"
+                    if self._errors.get(app_id) else tr("inst_err"))
+                self._set_state(app_id, "done" if ok else "error", final_text)
+            with count_lock:
+                done_count[0] += 1
+                d, t = done_count[0], total
+            try:
+                self.win.after(0, lambda dv=d, tv=t: self._apply_global(dv, tv))
+            except Exception:
+                pass
+
+        max_w = min(3, total)
+        with concurrent.futures.ThreadPoolExecutor(max_workers=max_w) as pool:
+            concurrent.futures.wait([pool.submit(install_one, r) for r in self.exe_rows])
+        try:
+            self.win.after(0, self._on_all_done)
+        except Exception:
+            pass
+
+    def _add_proc(self, proc):
+        with self._procs_lock:
+            self._active_procs.append(proc)
+        return proc
+
+    def _remove_proc(self, proc):
+        with self._procs_lock:
+            try:
+                self._active_procs.remove(proc)
+            except ValueError:
+                pass
 
     def _store_installer_install(self, row) -> bool:
         app_id = row.app["id"]
         m = re.search(r'ProductId=([A-Z0-9]+)', row.app.get("store_url", ""), re.I)
         if not m:
+            self._errors[app_id] = "No ProductId"
             return False
         pid = m.group(1)
 
@@ -929,25 +1169,30 @@ class InstallerWindow:
             with urllib.request.urlopen(req, timeout=30) as r:
                 with open(dest, "wb") as f:
                     f.write(r.read())
-        except Exception:
+        except Exception as e:
+            self._errors[app_id] = type(e).__name__
             return False
 
         _set_lbl(tr("inst_installing"))
 
         try:
-            self._cur_proc = subprocess.Popen(
+            proc = self._add_proc(subprocess.Popen(
                 [dest, "-silent"],
                 creationflags=subprocess.CREATE_NO_WINDOW,
-            )
-            while self._cur_proc.poll() is None:
+            ))
+            while proc.poll() is None:
                 if self._cancelled.is_set():
-                    self._cur_proc.terminate()
+                    proc.terminate()
+                    self._remove_proc(proc)
                     return False
                 try:
-                    self._cur_proc.wait(timeout=1)
+                    proc.wait(timeout=1)
                 except subprocess.TimeoutExpired:
                     pass
-            ok = self._cur_proc.returncode == 0
+            self._remove_proc(proc)
+            ok = proc.returncode == 0
+            if not ok:
+                self._errors[app_id] = f"Code {proc.returncode}"
             v  = 1.0 if ok else 0.0
             self.win.after(0, lambda a=app_id, val=v: (
                 self._row_data[a]["pb"].stop(),
@@ -955,7 +1200,8 @@ class InstallerWindow:
                 self._row_data[a]["pb"].set(val),
             ))
             return ok
-        except Exception:
+        except Exception as e:
+            self._errors[app_id] = type(e).__name__
             return False
         finally:
             try:
@@ -970,6 +1216,7 @@ class InstallerWindow:
             m = re.search(r'ProductId=([A-Z0-9]+)', row.app.get("store_url", ""), re.I)
             if m:
                 return self._store_installer_install(row)
+            self._errors[app_id] = "No ProductId"
             return False
 
         wid = row.app.get("winget_id")
@@ -982,27 +1229,31 @@ class InstallerWindow:
                            self._row_data[app_id]["status_lbl"].configure(text=t))
 
         try:
-            self._cur_proc = subprocess.Popen(
+            proc = self._add_proc(subprocess.Popen(
                 ["winget", "install", "--id", wid, "-e",
                  "--accept-source-agreements", "--accept-package-agreements", "--silent"],
                 stdout=subprocess.PIPE, stderr=subprocess.STDOUT,
                 text=True, encoding="utf-8", errors="replace",
                 creationflags=subprocess.CREATE_NO_WINDOW,
-            )
+            ))
             self.win.after(0, lambda a=app_id: (
                 self._row_data[a]["pb"].configure(mode="indeterminate"),
                 self._row_data[a]["pb"].start(),
             ))
-            for line in self._cur_proc.stdout:
+            for line in proc.stdout:
                 if self._cancelled.is_set():
-                    self._cur_proc.terminate()
+                    proc.terminate()
+                    self._remove_proc(proc)
                     return False
                 if re.search(r'download', line, re.I):
                     _set_lbl(tr("inst_downloading", pct="…"))
                 elif re.search(r'verif|hash|start.*install|installing', line, re.I):
                     _set_lbl(tr("inst_installing"))
-            self._cur_proc.wait()
-            ok  = self._cur_proc.returncode in (0, 3010)
+            proc.wait()
+            self._remove_proc(proc)
+            ok  = proc.returncode in (0, 3010)
+            if not ok:
+                self._errors[app_id] = f"Code {proc.returncode}"
             v   = 1.0 if ok else 0.0
             self.win.after(0, lambda a=app_id, val=v: (
                 self._row_data[a]["pb"].stop(),
@@ -1015,11 +1266,12 @@ class InstallerWindow:
             return self._download_install(row, url) if url else self._open_web(row)
 
     def _download_install(self, row, url: str) -> bool:
-        app  = row.app
-        tmp  = os.path.join(tempfile.gettempdir(), "InstallPilot")
+        app   = row.app
+        app_id = app["id"]
+        tmp   = os.path.join(tempfile.gettempdir(), "InstallPilot")
         os.makedirs(tmp, exist_ok=True)
-        raw  = url.split("/")[-1].split("?")[0]
-        ext  = ".msi" if raw.lower().endswith(".msi") else ".exe"
+        raw   = url.split("/")[-1].split("?")[0]
+        ext   = ".msi" if raw.lower().endswith(".msi") else ".exe"
         fname = (raw if raw.lower().endswith((".exe", ".msi"))
                  else f"{app_name(app).replace(' ', '_')}_setup{ext}")
         dest  = os.path.join(tmp, fname)
@@ -1041,19 +1293,37 @@ class InstallerWindow:
                         if total:
                             pct = done * 100 // total
                             if pct >= last_pct + 5:
-                                self._set_progress(row.app["id"], pct,
+                                self._set_progress(app_id, pct,
                                                    tr("inst_downloading", pct=pct))
                                 last_pct = pct
-            self._set_progress(row.app["id"], 90, tr("inst_installing_popup"))
-            cmd = _silent_cmd(dest, app)
-            self._cur_proc = subprocess.Popen(
-                cmd, creationflags=subprocess.CREATE_NO_WINDOW)
+            self._set_progress(app_id, 90, tr("inst_installing_popup"))
+            cmd  = _silent_cmd(dest, app)
+            proc = self._add_proc(subprocess.Popen(
+                cmd, creationflags=subprocess.CREATE_NO_WINDOW))
             threading.Thread(
-                target=_cleanup_after_proc, args=(self._cur_proc, dest), daemon=True
+                target=_cleanup_after_proc, args=(proc, dest), daemon=True
             ).start()
-            self._cur_proc.wait(timeout=600)
-            return self._cur_proc.returncode in (0, 3010)
-        except Exception:
+            try:
+                proc.wait(timeout=600)
+            except subprocess.TimeoutExpired:
+                try:
+                    proc.terminate()
+                except Exception:
+                    pass
+                self._remove_proc(proc)
+                self._errors[app_id] = "Timeout"
+                return False
+            self._remove_proc(proc)
+            ok = proc.returncode in (0, 3010)
+            if not ok:
+                self._errors[app_id] = f"Code {proc.returncode}"
+            return ok
+        except urllib.error.HTTPError as e:
+            self._errors[app_id] = f"HTTP {e.code}"
+            open_url(app.get("official_url", url))
+            return False
+        except Exception as e:
+            self._errors[app_id] = type(e).__name__
             open_url(app.get("official_url", url))
             return False
 
@@ -1102,29 +1372,36 @@ class InstallerWindow:
         ok_count = sum(1 for v in self._results.values() if v)
         self._global_lbl.configure(
             text=tr("inst_summary", ok=ok_count, total=len(self.exe_rows)))
-        self._action_btn.configure(text=tr("inst_close"), command=self.win.destroy)
+        self._action_btn.configure(text=tr("inst_close"), command=self._close_and_refresh)
         self._save_btn.configure(state="normal")
+
+    def _close_and_refresh(self):
+        self.win.destroy()
+        if self._on_done_cb:
+            self._on_done_cb()
 
     def _save_script(self):
         try:
             path = _generate_bat_script(self.exe_rows)
-            messagebox.showinfo(tr("inst_save_script"),
-                                tr("inst_script_saved", path=path), parent=self.win)
+            if path:
+                messagebox.showinfo(tr("inst_save_script"),
+                                    tr("inst_script_saved", path=path), parent=self.win)
         except Exception as e:
             messagebox.showerror("Erreur", str(e), parent=self.win)
 
     def _on_cancel(self):
         self._cancelled.set()
-        if self._cur_proc:
-            try:
-                self._cur_proc.terminate()
-            except Exception:
-                pass
+        with self._procs_lock:
+            for proc in list(self._active_procs):
+                try:
+                    proc.terminate()
+                except Exception:
+                    pass
         self.win.destroy()
 
     def _on_close_request(self):
         if self._done:
-            self.win.destroy()
+            self._close_and_refresh()
         else:
             self._on_cancel()
 
@@ -1135,14 +1412,22 @@ class App:
     _SIDEBAR_W = 240
 
     def __init__(self, root):
-        self.root        = root
-        self.rows        = []
-        self._traces     = []
-        self._active_cat = "all"
-        self._search_var = StringVar()
+        self.root         = root
+        self.rows         = []
+        self._traces      = []
+        self._active_cat  = "all"
+        self._search_var  = StringVar()
+        self._search_after = None
         self._nav_buttons: dict = {}
         self._cat_sections: dict = {}
-        self._selections: dict  = {}   # app_id -> bool, persisted across re-renders
+        self._selections: dict  = dict(_saved_selections)  # restored from module-level
+        self._refresh_cancelled = threading.Event()
+
+        # Load apps once; reused by sidebar nav and content list
+        self._all_apps   = load_apps()
+        _cats = group_apps_by_category(self._all_apps)
+        self._active_cats = [(c, _cats[c]) for c in CATEGORY_ORDER if _cats.get(c)]
+
         self._build()
         self.refresh_statuses()
 
@@ -1152,18 +1437,15 @@ class App:
         main = ctk.CTkFrame(self.root, fg_color=T["bg"], corner_radius=0)
         main.pack(fill="both", expand=True)
 
-        # Sidebar
         self._sidebar = ctk.CTkFrame(main, fg_color=T["sidebar"],
                                      width=self._SIDEBAR_W, corner_radius=0)
         self._sidebar.pack(side="left", fill="y")
         self._sidebar.pack_propagate(False)
         self._build_sidebar()
 
-        # 1-px divider
         ctk.CTkFrame(main, fg_color=T["border"], width=1,
                      corner_radius=0).pack(side="left", fill="y")
 
-        # Content
         content = ctk.CTkFrame(main, fg_color=T["bg"], corner_radius=0)
         content.pack(side="left", fill="both", expand=True)
         self._build_content(content)
@@ -1173,7 +1455,6 @@ class App:
     def _build_sidebar(self):
         sb = self._sidebar
 
-        # Logo row
         logo_frame = ctk.CTkFrame(sb, fg_color="transparent", height=68)
         logo_frame.pack(fill="x")
         logo_frame.pack_propagate(False)
@@ -1194,7 +1475,6 @@ class App:
                      font=("Segoe UI", 15, "bold"),
                      text_color=T["fg"]).pack(side="left")
 
-        # Search
         self._search_entry = ctk.CTkEntry(
             sb,
             textvariable=self._search_var,
@@ -1206,45 +1486,41 @@ class App:
             height=34, corner_radius=8,
         )
         self._search_entry.pack(fill="x", padx=12, pady=(0, 8))
-        self._search_var.trace_add("write", lambda *_: self._refresh_content())
 
-        # Nav items
+        def _on_search(*_):
+            if self._search_after:
+                self.root.after_cancel(self._search_after)
+            self._search_after = self.root.after(150, self._refresh_content)
+
+        self._search_var.trace_add("write", _on_search)
+
         nav = ctk.CTkFrame(sb, fg_color="transparent")
         nav.pack(fill="x")
 
         self._add_nav_item(nav, "all", tr("nav_all"))
-
-        apps = load_apps()
-        cats = group_apps_by_category(apps)
-        self._active_cats = [(c, cats[c]) for c in CATEGORY_ORDER if cats.get(c)]
         for cat_key, _ in self._active_cats:
             self._add_nav_item(nav, cat_key, category_title(cat_key))
 
-        # Bottom controls
         bottom = ctk.CTkFrame(sb, fg_color="transparent")
         bottom.pack(side="bottom", fill="x", padx=12, pady=(0, 14))
 
         ctk.CTkFrame(bottom, fg_color=T["border"], height=1,
                      corner_radius=0).pack(fill="x", pady=(0, 10))
 
-        # Dark mode switch
         row_theme = ctk.CTkFrame(bottom, fg_color="transparent", height=36)
         row_theme.pack(fill="x")
         row_theme.pack_propagate(False)
         ctk.CTkLabel(row_theme, text=tr("dark_mode"), font=("Segoe UI", 11),
                      text_color=T["fg2"]).pack(side="left", padx=(4, 0))
+        self._theme_var = BooleanVar(value=(theme == "dark"))
         self._theme_sw = ctk.CTkSwitch(
             row_theme, text="", width=44, height=22,
             fg_color=T["tog_off"], progress_color=T["tog_on"],
+            variable=self._theme_var, onvalue=True, offvalue=False,
             command=self._on_theme_change,
         )
-        if theme == "dark":
-            self._theme_sw.select()
-        else:
-            self._theme_sw.deselect()
         self._theme_sw.pack(side="right")
 
-        # Language
         row_lang = ctk.CTkFrame(bottom, fg_color="transparent", height=36)
         row_lang.pack(fill="x", pady=(6, 0))
         row_lang.pack_propagate(False)
@@ -1323,7 +1599,6 @@ class App:
     # ── Content area ─────────────────────────────────────────────────────────
 
     def _build_content(self, content):
-        # Page header
         hdr = ctk.CTkFrame(content, fg_color="transparent", height=66)
         hdr.pack(fill="x", padx=28)
         hdr.pack_propagate(False)
@@ -1337,10 +1612,17 @@ class App:
                                           text_color=T["accent"], anchor="e")
         self.counter_label.pack(side="right", pady=16)
 
+        self._global_sel_lbl = ctk.CTkLabel(
+            hdr, text=tr("select_all"),
+            text_color=T["accent"],
+            font=("Segoe UI", 10, "underline"),
+            cursor="hand2")
+        self._global_sel_lbl.pack(side="right", padx=(0, 12), pady=16)
+        self._global_sel_lbl.bind("<Button-1>", lambda *_: self._toggle_all())
+
         ctk.CTkFrame(content, fg_color=T["border"], height=1,
                      corner_radius=0).pack(fill="x")
 
-        # Scrollable app list
         self._scroll = ctk.CTkScrollableFrame(
             content, fg_color="transparent", corner_radius=0,
             scrollbar_button_color=T["scrollbar"],
@@ -1349,7 +1631,6 @@ class App:
 
         self._build_app_list()
 
-        # Footer
         ctk.CTkFrame(content, fg_color=T["border"], height=1,
                      corner_radius=0).pack(fill="x")
         footer = ctk.CTkFrame(content, fg_color=T["surface"],
@@ -1358,28 +1639,32 @@ class App:
         footer.pack_propagate(False)
         self._build_footer(footer)
 
+        self.root.bind("<Return>", lambda _: self.start_install())
+
     def _build_app_list(self):
-        apps = load_apps()
-        cats = group_apps_by_category(apps)
-        self._active_cats = [(c, cats[c]) for c in CATEGORY_ORDER if cats.get(c)]
         self._render_layout()
 
     # ── Rendu dynamique du contenu ───────────────────────────────────────────
 
     def _refresh_content(self):
         self._render_layout()
+        # Update installation status for all newly created rows
+        for row in self.rows:
+            try:
+                row.update_status()
+            except Exception:
+                pass
         if self._active_cat == "all":
             self._page_title.configure(text=tr("step1"))
         else:
             self._page_title.configure(text=category_title(self._active_cat))
 
     def _render_layout(self):
-        """Reconstruit le contenu scrollable selon la catégorie active et la recherche."""
-        # Sauvegarder les sélections en cours
         for row in self.rows:
             self._selections[row.app["id"]] = row.selected.get()
+        global _saved_selections
+        _saved_selections.update(self._selections)
 
-        # Supprimer les traces
         for var, tid in self._traces:
             try:
                 var.trace_remove("write", tid)
@@ -1387,7 +1672,6 @@ class App:
                 pass
         self._traces.clear()
 
-        # Vider le scroll frame
         for w in self._scroll.winfo_children():
             w.destroy()
         self.rows.clear()
@@ -1406,7 +1690,6 @@ class App:
         self._update_counter()
 
     def _render_all_grid(self, search: str):
-        """Vue 'Toutes les apps' : catégories en grille 3 colonnes (style Ninite)."""
         NCOLS = 3
         outer = ctk.CTkFrame(self._scroll, fg_color="transparent")
         outer.pack(fill="both", expand=True, padx=4, pady=4)
@@ -1427,12 +1710,10 @@ class App:
 
     def _render_category_block(self, cat_key: str, cat_apps: list,
                                two_col: bool, parent=None):
-        """Construit un bloc catégorie avec header + liste d'apps."""
         if parent is None:
             parent = ctk.CTkFrame(self._scroll, fg_color="transparent")
             parent.pack(fill="x", padx=8, pady=(0, 16))
 
-        # Header
         hdr = ctk.CTkFrame(parent, fg_color="transparent")
         hdr.pack(fill="x", pady=(0, 4))
 
@@ -1452,7 +1733,6 @@ class App:
         cat_rows = []
 
         if two_col:
-            # Vue catégorie unique : 2 colonnes d'apps
             grid_f = ctk.CTkFrame(parent, fg_color="transparent")
             grid_f.pack(fill="x")
             grid_f.columnconfigure(0, weight=1)
@@ -1464,18 +1744,20 @@ class App:
                 cat_rows.append(row)
                 self._track_row(row)
         else:
-            # Vue 'toutes les apps' : liste verticale dans la colonne
             for app in cat_apps:
                 row = AppRow(parent, app)
                 row.frame.pack(fill="x", pady=2)
                 cat_rows.append(row)
                 self._track_row(row)
 
-        sel_lbl.bind("<Button-1>",
-                     lambda *_, r=cat_rows, l=sel_lbl: self._toggle_cat(r, l))
+        available = [r for r in cat_rows if not r._installed]
+        if not available:
+            sel_lbl.configure(text_color=T["fg3"])
+        else:
+            sel_lbl.bind("<Button-1>",
+                         lambda *_, r=cat_rows, l=sel_lbl: self._toggle_cat(r, l))
 
     def _track_row(self, row: "AppRow"):
-        """Restaure la sélection sauvegardée et ajoute le trace."""
         if not row._installed:
             row.selected.set(self._selections.get(row.app["id"], False))
         self.rows.append(row)
@@ -1485,6 +1767,27 @@ class App:
     def _build_footer(self, footer):
         left = ctk.CTkFrame(footer, fg_color="transparent")
         left.pack(side="left", fill="y", padx=(24, 0))
+
+        self._version_lbl = ctk.CTkLabel(
+            left, text=APP_VERSION or "InstallPilot",
+            font=("Segoe UI", 10, "bold"),
+            text_color=T["fg3"], anchor="w")
+        self._version_lbl.pack(side="left")
+
+        self._update_lbl = ctk.CTkLabel(
+            left, text="", font=("Segoe UI", 10),
+            text_color=T["accent"], anchor="w")
+        self._update_lbl.pack(side="left")
+
+        def _on_github_version(v):
+            truncated = v if len(v) <= 42 else v[:40] + "…"
+            def _apply():
+                if not APP_VERSION:
+                    self._version_lbl.configure(text=truncated)
+                elif truncated != APP_VERSION:
+                    self._update_lbl.configure(text=f" · ↑ {truncated}")
+            self.root.after(0, _apply)
+        _fetch_github_version(_on_github_version)
 
         self.status_label = ctk.CTkLabel(left, text="", font=("Segoe UI", 10),
                                          text_color=T["error"], anchor="w")
@@ -1521,6 +1824,17 @@ class App:
             r.selected.set(new_val)
         lbl.configure(text=tr("select_none") if new_val else tr("select_all"))
 
+    def _toggle_all(self):
+        available = [r for r in self.rows if not r._installed]
+        if not available:
+            return
+        all_selected = all(r.selected.get() for r in available)
+        new_val = not all_selected
+        for r in available:
+            r.selected.set(new_val)
+        self._global_sel_lbl.configure(
+            text=tr("select_none") if new_val else tr("select_all"))
+
     def _update_counter(self, *_):
         count = sum(1 for r in self.rows if r.selected.get())
         self.counter_label.configure(
@@ -1528,34 +1842,78 @@ class App:
 
     def _on_lang_change(self, value):
         global lang_code
-        lang_code = "fr" if value == "Français" else "en"
+        new_code = "fr" if value == "Français" else "en"
+        if new_code == lang_code:
+            return  # spurious callback at init — no actual change
+        lang_code = new_code
         save_settings()
         self.root.after(0, self._restart)
 
     def _on_theme_change(self):
         global theme
-        theme = "light" if theme == "dark" else "dark"
+        new_theme = "dark" if self._theme_var.get() else "light"
+        if new_theme == theme:
+            return  # spurious callback at init — state didn't actually change
+        theme = new_theme
         save_settings()
         self.root.after(0, self._restart)
 
     def _restart(self):
+        self._refresh_cancelled.set()
         self.root.destroy()
         run_app()
 
     def refresh_statuses(self):
-        global _registry_cache, _appx_cache, _winget_store_cache
-        _registry_cache     = None
-        _appx_cache         = None
-        _winget_store_cache = None
+        global _registry_cache, _appx_cache, _winget_store_cache, _winget_installed_cache, _winget_upgrades_cache
+        _registry_cache         = None
+        _appx_cache             = None
+        _winget_store_cache     = None
+        _winget_installed_cache = None
+        _winget_upgrades_cache  = None
         self.set_status(tr("status_checking"))
         self._toggle_controls(True)
         threading.Thread(target=self._refresh_worker, daemon=True).start()
 
     def _refresh_worker(self):
-        for row in self.rows:
-            row.update_status()
+        _get_registry_apps()
+        _get_appx_packages()
+        _load_winget_cache()
+        if not self._refresh_cancelled.is_set():
+            try:
+                self.root.after(0, self._finish_refresh)
+            except Exception:
+                pass
+
+    def _finish_refresh(self):
+        if self._refresh_cancelled.is_set():
+            return
+        for row in list(self.rows):
+            try:
+                row.update_status()
+            except Exception:
+                pass
         self.set_status("")
-        self.root.after(0, self._toggle_controls, False)
+        self._toggle_controls(False)
+        threading.Thread(target=self._updates_worker, daemon=True).start()
+
+    def _updates_worker(self):
+        _load_winget_upgrades_cache()
+        if not self._refresh_cancelled.is_set():
+            try:
+                self.root.after(0, self._apply_update_badges)
+            except Exception:
+                pass
+
+    def _apply_update_badges(self):
+        if self._refresh_cancelled.is_set():
+            return
+        upgrades = _get_winget_upgrades()
+        for row in list(self.rows):
+            try:
+                wid = row.app.get("winget_id")
+                row.set_update_badge(bool(wid and wid.lower() in upgrades))
+            except Exception:
+                pass
 
     def start_install(self):
         selected = [r for r in self.rows if r.selected.get()]
@@ -1592,33 +1950,30 @@ class App:
                 open_url(url)
 
         if installer_rows:
-            InstallerWindow(self.root, installer_rows)
+            InstallerWindow(self.root, installer_rows, on_done=self.refresh_statuses)
 
     def _toggle_controls(self, disabled):
         self.check_btn.configure(state="disabled" if disabled else "normal")
-        for row in self.rows:
-            if disabled:
+        if disabled:
+            for row in self.rows:
                 row.check.configure(state="disabled")
-            else:
-                row.update_status()
 
     def set_status(self, text):
         self.root.after(0, lambda: self.status_label.configure(text=text))
 
     def log(self, *_):
-        pass  # log widget removed; messages visible in InstallerWindow
+        pass
 
 
 # ── Bootstrap ─────────────────────────────────────────────────────────────────
 
 def run_app():
     global T, _icon_cache
-    _icon_cache.clear()  # PhotoImages are tied to the old Tk interpreter after destroy()
-    SourceToggle._store_img = None  # CTkImage also tied to old interpreter
+    _icon_cache.clear()
+    SourceToggle._store_img = None
 
     T = dict(THEMES[theme])
 
-    # Override accent with Windows system accent color
     accent = _get_accent_color()
     if accent and len(accent) == 7 and accent.startswith("#"):
         T["accent"]    = accent
@@ -1629,29 +1984,72 @@ def run_app():
     ctk.set_appearance_mode("dark" if theme == "dark" else "light")
     ctk.set_default_color_theme("blue")
 
-    root = ctk.CTk()
-    root.title(LANGUAGES[lang_code]["title"])
-    root.geometry("1120x720")
-    root.minsize(880, 580)
-
-    # Mica effect (Windows 11)
+    # Suppress Tcl error messages by redirecting stderr file descriptor
+    import os
+    stderr_backup = os.dup(2)
+    devnull = os.open(os.devnull, os.O_WRONLY)
+    os.dup2(devnull, 2)
+    os.close(devnull)
+    
     try:
-        import pywinstyles
-        pywinstyles.apply_style(root, "mica")
-    except Exception:
-        pass
+        root = ctk.CTk()
+        root.title(LANGUAGES[lang_code]["title"])
+        root.geometry("1120x720")
+        root.minsize(880, 580)
 
-    logo_path = os.path.join(BASE_DIR, "logo.png")
-    if os.path.exists(logo_path):
         try:
-            icon = PhotoImage(file=logo_path)
-            root.iconphoto(True, icon)
+            import pywinstyles
+            pywinstyles.apply_style(root, "mica")
         except Exception:
             pass
 
-    threading.Thread(target=_cleanup_installer_temp, daemon=True).start()
-    App(root)
-    root.mainloop()
+        logo_path = os.path.join(BASE_DIR, "logo.png")
+        if os.path.exists(logo_path):
+            try:
+                icon = PhotoImage(file=logo_path)
+                root.iconphoto(True, icon)
+            except Exception:
+                pass
+
+        # Restore stderr before showing GUI
+        os.dup2(stderr_backup, 2)
+        os.close(stderr_backup)
+        
+        threading.Thread(target=_cleanup_installer_temp, daemon=True).start()
+        App(root)
+        
+        def on_closing():
+            try:
+                root.quit()
+            except Exception:
+                pass
+        
+        root.protocol("WM_DELETE_WINDOW", on_closing)
+        
+        # Suppress stderr again for mainloop
+        devnull = os.open(os.devnull, os.O_WRONLY)
+        os.dup2(devnull, 2)
+        os.close(devnull)
+        
+        try:
+            root.mainloop()
+        except (tk.TclError, Exception):
+            pass
+        finally:
+            # Restore stderr
+            try:
+                os.dup2(stderr_backup, 2)
+                os.close(stderr_backup)
+            except Exception:
+                pass
+    except Exception as e:
+        # Restore stderr in case of error
+        try:
+            os.dup2(stderr_backup, 2)
+            os.close(stderr_backup)
+        except Exception:
+            pass
+        raise
 
 
 if __name__ == "__main__":

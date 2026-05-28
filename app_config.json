@@ -3,6 +3,7 @@
     {
       "id": "chrome",
       "names": {"fr": "Google Chrome", "en": "Google Chrome"},
+      "description": {"fr": "Navigateur rapide et populaire de Google", "en": "Google's fast and popular web browser"},
       "short_name": "GCH",
       "color": "#4285f4",
       "icon_path": "icons/chrome.png",
@@ -20,6 +21,7 @@
     {
       "id": "firefox",
       "names": {"fr": "Mozilla Firefox", "en": "Mozilla Firefox"},
+      "description": {"fr": "Navigateur libre axé sur la vie privée", "en": "Free, open-source, privacy-focused browser"},
       "short_name": "FF",
       "color": "#FF7139",
       "icon_path": "icons/firefox.png",
@@ -36,6 +38,7 @@
     {
       "id": "brave",
       "names": {"fr": "Brave", "en": "Brave"},
+      "description": {"fr": "Navigateur avec blocage des pubs intégré", "en": "Browser with built-in ad and tracker blocking"},
       "short_name": "BRV",
       "color": "#FB542B",
       "icon_path": "icons/brave.png",
@@ -51,6 +54,7 @@
     {
       "id": "discord",
       "names": {"fr": "Discord", "en": "Discord"},
+      "description": {"fr": "Chat vocal, vidéo et texte pour la communauté et les gamers", "en": "Voice, video and text chat for communities and gamers"},
       "short_name": "DSC",
       "color": "#5865f2",
       "icon_path": "icons/discord.png",
@@ -70,6 +74,7 @@
     {
       "id": "teams",
       "names": {"fr": "Microsoft Teams", "en": "Microsoft Teams"},
+      "description": {"fr": "Messagerie, visioconférence et collaboration Microsoft", "en": "Microsoft messaging, video calls and collaboration"},
       "short_name": "MST",
       "color": "#6264A7",
       "icon_path": "icons/teams.png",
@@ -91,6 +96,7 @@
     {
       "id": "whatsapp",
       "names": {"fr": "WhatsApp", "en": "WhatsApp"},
+      "description": {"fr": "Messagerie instantanée de Meta, chiffrement de bout en bout", "en": "Meta's end-to-end encrypted instant messaging app"},
       "short_name": "WA",
       "color": "#25D366",
       "icon_path": "icons/whatsapp.png",
@@ -109,6 +115,7 @@
     {
       "id": "steam",
       "names": {"fr": "Steam", "en": "Steam"},
+      "description": {"fr": "Plateforme de jeux PC de Valve avec 50 000+ titres", "en": "Valve's PC gaming platform with 50,000+ titles"},
       "short_name": "STEAM",
       "color": "#1b2838",
       "icon_path": "icons/steam.png",
@@ -125,6 +132,7 @@
     {
       "id": "epic",
       "names": {"fr": "Epic Games Launcher", "en": "Epic Games Launcher"},
+      "description": {"fr": "Launcher de la boutique Epic Games, jeux gratuits mensuels", "en": "Epic Games Store launcher with free monthly games"},
       "short_name": "EPIC",
       "color": "#2a2a2a",
       "icon_path": "icons/epic.png",
@@ -140,6 +148,7 @@
     {
       "id": "obs",
       "names": {"fr": "OBS Studio", "en": "OBS Studio"},
+      "description": {"fr": "Enregistrement et streaming vidéo gratuit et open-source", "en": "Free, open-source video recording and live streaming"},
       "short_name": "OBS",
       "color": "#1f5bb5",
       "icon_path": "icons/obs.png",
@@ -160,6 +169,7 @@
     {
       "id": "vlc",
       "names": {"fr": "VLC media player", "en": "VLC media player"},
+      "description": {"fr": "Lecteur multimédia universel qui lit presque tout", "en": "Universal media player that plays almost everything"},
       "short_name": "VLC",
       "color": "#FF8800",
       "icon_path": "icons/vlc.png",
@@ -176,6 +186,7 @@
     {
       "id": "spotify",
       "names": {"fr": "Spotify", "en": "Spotify"},
+      "description": {"fr": "Streaming musical avec plus de 100 millions de titres", "en": "Music streaming with over 100 million tracks"},
       "short_name": "SPT",
       "color": "#1DB954",
       "icon_path": "icons/spotify.png",
@@ -195,6 +206,7 @@
     {
       "id": "apple_music",
       "names": {"fr": "Apple Music", "en": "Apple Music"},
+      "description": {"fr": "Service de streaming musical Apple disponible sur Windows", "en": "Apple's music streaming service, available on Windows"},
       "short_name": "APM",
       "color": "#FC3C44",
       "icon_path": "icons/apple_music.png",
@@ -213,6 +225,7 @@
     {
       "id": "deezer",
       "names": {"fr": "Deezer", "en": "Deezer"},
+      "description": {"fr": "Streaming musical français avec option HiFi sans compression", "en": "French music streaming with lossless HiFi option"},
       "short_name": "DZR",
       "color": "#A238FF",
       "icon_path": "icons/deezer.png",
@@ -232,6 +245,7 @@
     {
       "id": "plex",
       "names": {"fr": "Plex", "en": "Plex"},
+      "description": {"fr": "Serveur et client multimédia pour votre bibliothèque perso", "en": "Media server and client for your personal library"},
       "short_name": "PLEX",
       "color": "#E5A00D",
       "icon_path": "icons/plex.png",
@@ -249,6 +263,7 @@
     {
       "id": "notion",
       "names": {"fr": "Notion", "en": "Notion"},
+      "description": {"fr": "Notes, bases de données et gestion de projet tout-en-un", "en": "All-in-one notes, databases and project management"},
       "short_name": "NOT",
       "color": "#191919",
       "icon_path": "icons/notion.png",
@@ -266,6 +281,7 @@
     {
       "id": "libreoffice",
       "names": {"fr": "LibreOffice", "en": "LibreOffice"},
+      "description": {"fr": "Suite bureautique complète et gratuite (Writer, Calc, Impress...)", "en": "Full-featured free office suite (Writer, Calc, Impress...)"},
       "short_name": "LO",
       "color": "#18A303",
       "icon_path": "icons/libreoffice.png",
@@ -281,6 +297,7 @@
     {
       "id": "outlook_new",
       "names": {"fr": "Outlook", "en": "Outlook"},
+      "description": {"fr": "Client email et calendrier Microsoft nouvelle génération", "en": "Next-generation Microsoft email and calendar client"},
       "short_name": "OLK",
       "color": "#0078d4",
       "icon_path": "icons/outlook_new.png",
@@ -298,6 +315,7 @@
     {
       "id": "antigravity",
       "names": {"fr": "Antigravity", "en": "Antigravity"},
+      "description": {"fr": "Application de productivité et d'organisation personnelle", "en": "Personal productivity and organization app"},
       "short_name": "ANT",
       "color": "#009688",
       "icon_path": "icons/antigravity.png",
@@ -315,6 +333,7 @@
     {
       "id": "keepass",
       "names": {"fr": "KeePass", "en": "KeePass"},
+      "description": {"fr": "Gestionnaire de mots de passe open-source stocké localement", "en": "Open-source password manager stored locally"},
       "short_name": "KPS",
       "color": "#6cac20",
       "icon_path": "icons/keepass.png",
@@ -333,6 +352,7 @@
     {
       "id": "7zip",
       "names": {"fr": "7-Zip", "en": "7-Zip"},
+      "description": {"fr": "Archiveur puissant supportant 7z, ZIP, RAR et plus", "en": "Powerful archiver supporting 7z, ZIP, RAR and more"},
       "short_name": "7ZIP",
       "color": "#009900",
       "icon_path": "icons/7zip.png",
@@ -349,6 +369,7 @@
     {
       "id": "everything",
       "names": {"fr": "Everything", "en": "Everything"},
+      "description": {"fr": "Recherche de fichiers et dossiers instantanée sur Windows", "en": "Instant file and folder search across Windows"},
       "short_name": "EVR",
       "color": "#1C5FB5",
       "icon_path": "icons/everything.png",
@@ -364,6 +385,7 @@
     {
       "id": "powertoys",
       "names": {"fr": "PowerToys", "en": "PowerToys"},
+      "description": {"fr": "Utilitaires système avancés Microsoft : FancyZones, PowerRename...", "en": "Advanced Microsoft system utilities: FancyZones, PowerRename..."},
       "short_name": "PT",
       "color": "#0078d4",
       "icon_path": "icons/powertoys.png",
@@ -383,6 +405,7 @@
     {
       "id": "lenovo_vantage",
       "names": {"fr": "Lenovo Vantage", "en": "Lenovo Vantage"},
+      "description": {"fr": "Gestion des pilotes, réglages et diagnostics Lenovo", "en": "Lenovo driver management, settings and diagnostics"},
       "short_name": "LNV",
       "color": "#E2231A",
       "icon_path": "icons/lenovo_vantage.png",
@@ -400,6 +423,7 @@
     {
       "id": "nvidia_app",
       "names": {"fr": "NVIDIA App", "en": "NVIDIA App"},
+      "description": {"fr": "Pilotes, overlay et optimisation des jeux NVIDIA", "en": "NVIDIA drivers, in-game overlay and game optimization"},
       "short_name": "NVD",
       "color": "#76B900",
       "icon_path": "icons/nvidia_app.png",
@@ -416,6 +440,7 @@
     {
       "id": "cpuz",
       "names": {"fr": "CPU-Z", "en": "CPU-Z"},
+      "description": {"fr": "Informations détaillées sur le processeur, la RAM et la carte mère", "en": "Detailed info on CPU, RAM and motherboard"},
       "short_name": "CPZ",
       "color": "#E8292F",
       "icon_path": "icons/cpuz.png",
@@ -431,6 +456,7 @@
     {
       "id": "vscode",
       "names": {"fr": "Visual Studio Code", "en": "Visual Studio Code"},
+      "description": {"fr": "Éditeur de code léger, extensible et gratuit de Microsoft", "en": "Lightweight, extensible and free code editor by Microsoft"},
       "short_name": "VS",
       "color": "#0078d4",
       "icon_path": "icons/vscode.png",
@@ -451,6 +477,7 @@
     {
       "id": "git",
       "names": {"fr": "Git", "en": "Git"},
+      "description": {"fr": "Gestionnaire de versions décentralisé, indispensable pour le dev", "en": "Distributed version control system, essential for development"},
       "short_name": "GIT",
       "color": "#F05032",
       "icon_path": "icons/git.png",
@@ -467,6 +494,7 @@
     {
       "id": "python",
       "names": {"fr": "Python", "en": "Python"},
+      "description": {"fr": "Langage de programmation polyvalent, populaire pour le scripting et l'IA", "en": "Versatile language popular for scripting, data science and AI"},
       "short_name": "PY",
       "color": "#3776AB",
       "icon_path": "icons/python.png",
@@ -485,6 +513,7 @@
     {
       "id": "nodejs",
       "names": {"fr": "Node.js", "en": "Node.js"},
+      "description": {"fr": "Runtime JavaScript côté serveur, base de l'écosystème npm", "en": "Server-side JavaScript runtime, backbone of the npm ecosystem"},
       "short_name": "NODE",
       "color": "#339933",
       "icon_path": "icons/nodejs.png",
@@ -501,6 +530,7 @@
     {
       "id": "docker",
       "names": {"fr": "Docker Desktop", "en": "Docker Desktop"},
+      "description": {"fr": "Conteneurisation d'applications avec interface graphique", "en": "Application containerization with a graphical interface"},
       "short_name": "DCK",
       "color": "#2496ED",
       "icon_path": "icons/docker.png",
