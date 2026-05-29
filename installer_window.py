@@ -169,10 +169,12 @@ class InstallerWindow:
             
             for row in self.exe_rows:
                 app_id = row.app["id"]
-                self.win.after(0, lambda a=app_id: (
+                source = row.get_source()
+                wait_text = "En attente (Microsoft Store)" if source == "store" else "En attente (Site Officiel)"
+                self.win.after(0, lambda a=app_id, t=wait_text: (
                     self._row_data[a]["pb"].configure(mode="indeterminate"),
                     self._row_data[a]["pb"].start(),
-                    self._row_data[a]["status_lbl"].configure(text="En attente (PowerShell)", text_color=T["fg"])
+                    self._row_data[a]["status_lbl"].configure(text=t, text_color=T["fg"])
                 ))
             
             import ctypes
@@ -576,7 +578,8 @@ class UpdaterWindow:
                             "name": parts[0],
                             "id": parts[1],
                             "version": parts[2],
-                            "available": parts[3]
+                            "available": parts[3],
+                            "source": parts[4] if len(parts) > 4 else ""
                         })
             self._updates = updates
             self.win.after(0, self._show_selection_ui)
@@ -623,8 +626,8 @@ class UpdaterWindow:
         self._update_btn.pack(side="right", padx=(0, 10), pady=13)
 
     def _start_selective_update(self):
-        selected_ids = [uid for uid, var in self._checkboxes.items() if var.get() == "on"]
-        if not selected_ids:
+        selected_updates = [up for up in self._updates if self._checkboxes[up["id"]].get() == "on"]
+        if not selected_updates:
             return
 
         for widget in self.body.winfo_children():
@@ -641,14 +644,14 @@ class UpdaterWindow:
         self._pb.start()
         self._pb.pack(pady=10)
 
-        threading.Thread(target=self._worker_update, args=(selected_ids,), daemon=True).start()
+        threading.Thread(target=self._worker_update, args=(selected_updates,), daemon=True).start()
 
-    def _worker_update(self, selected_ids):
+    def _worker_update(self, selected_updates):
         try:
             from installer_utils import _generate_selective_update_script
             import os, ctypes
             
-            script_path = _generate_selective_update_script(selected_ids)
+            script_path = _generate_selective_update_script(selected_updates)
             self._temp_dir = os.path.dirname(script_path)
             
             ctypes.windll.shell32.ShellExecuteW(

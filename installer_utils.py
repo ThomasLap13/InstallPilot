@@ -155,7 +155,23 @@ def _generate_ninite_script(exe_rows: list) -> str:
         name = app_name(app)
         wid = app.get("winget_id")
         
-        if wid and row.get_source() != "store":
+        source = row.get_source()
+        
+        store_id = None
+        if source == "store":
+            if wid and len(wid) in (12, 14) and wid.isalnum() and wid.isupper():
+                store_id = wid
+            else:
+                store_url = app.get("store_url") or ""
+                import re
+                m = re.search(r'(?:/detail/|ProductId=)([a-zA-Z0-9]{12,14})', store_url)
+                if m:
+                    store_id = m.group(1).upper()
+        
+        if store_id:
+            lines.append(f"Write-Host 'Installation de {name} depuis le Microsoft Store...' -ForegroundColor Green")
+            lines.append(f"winget install --id `\"{store_id}`\" --source msstore --accept-source-agreements --accept-package-agreements --silent")
+        elif wid and source != "store":
             lines.append(f"Write-Host 'Installation de {name} via Winget...' -ForegroundColor Green")
             lines.append(f"winget install --id `\"{wid}`\" -e --accept-source-agreements --accept-package-agreements --silent")
         else:
@@ -164,23 +180,27 @@ def _generate_ninite_script(exe_rows: list) -> str:
                 lines.append(f"Write-Host 'Telechargement de {name}...' -ForegroundColor Green")
                 ext = ".msi" if url.lower().endswith(".msi") else ".exe"
                 dest = f"$env:TEMP\\InstallPilot_Temp_{app['id']}{ext}"
-                lines.append(f"Invoke-WebRequest -Uri '{url}' -OutFile '{dest}' -UseBasicParsing")
+                lines.append(f"Invoke-WebRequest -Uri '{url}' -OutFile \"{dest}\" -UseBasicParsing")
                 lines.append(f"Write-Host 'Installation de {name}...' -ForegroundColor Green")
                 
                 silent_args = _silent_cmd(dest, app)
                 if ext == ".msi":
-                    lines.append(f"Start-Process -FilePath 'msiexec.exe' -ArgumentList '/i', '`\"{dest}`\"', '/qn', '/norestart' -Wait -NoNewWindow")
+                    lines.append(f"Start-Process -FilePath 'msiexec.exe' -ArgumentList '/i', \"{dest}\", '/qn', '/norestart' -Wait -NoNewWindow")
                 else:
                     args_str = ", ".join(f"'{arg}'" for arg in silent_args[1:])
                     if args_str:
-                        lines.append(f"Start-Process -FilePath '{dest}' -ArgumentList {args_str} -Wait -NoNewWindow")
+                        lines.append(f"Start-Process -FilePath \"{dest}\" -ArgumentList {args_str} -Wait -NoNewWindow")
                     else:
-                        lines.append(f"Start-Process -FilePath '{dest}' -Wait -NoNewWindow")
+                        lines.append(f"Start-Process -FilePath \"{dest}\" -Wait -NoNewWindow")
             else:
-                lines.append(f"Write-Host 'Impossible d installer {name}: aucun lien direct trouve.' -ForegroundColor Red")
-                official_url = app.get("official_url")
-                if official_url:
-                    lines.append(f"Start-Process '{official_url}'")
+                if wid:
+                    lines.append(f"Write-Host 'Installation de {name} via Winget...' -ForegroundColor Green")
+                    lines.append(f"winget install --id `\"{wid}`\" -e --accept-source-agreements --accept-package-agreements --silent")
+                else:
+                    lines.append(f"Write-Host 'Impossible d installer {name}: aucun lien direct trouve.' -ForegroundColor Red")
+                    fallback_url = app.get("store_url") or app.get("official_url")
+                    if fallback_url:
+                        lines.append(f"Start-Process '{fallback_url}'")
                     
     lines.append("Write-Host ''")
     lines.append("Write-Host 'Nettoyage...' -ForegroundColor DarkGray")
@@ -225,7 +245,7 @@ def _generate_update_all_script() -> str:
         
     return script_path
 
-def _generate_selective_update_script(ids: list) -> str:
+def _generate_selective_update_script(updates: list) -> str:
     import ctypes
     desktop = os.path.join(os.path.expanduser("~"), "Desktop")
     temp_dir = os.path.join(desktop, ".InstallPilot_Temp")
@@ -242,12 +262,25 @@ def _generate_selective_update_script(ids: list) -> str:
     lines = [
         "Write-Host 'InstallPilot - Mise a jour de la selection en cours...' -ForegroundColor Cyan",
         "Write-Host 'Ne fermez pas cette fenetre. Elle se fermera automatiquement a la fin.' -ForegroundColor Yellow",
-        "Write-Host ''",
+        "Write-Host ''"
     ]
     
-    for wid in ids:
-        lines.append(f"winget upgrade --id `\"{wid}`\" --accept-source-agreements --accept-package-agreements --silent")
-    
+    for up in updates:
+        wid = up["id"]
+        source = up.get("source", "").lower()
+        name = up.get("name", wid)
+        
+        if source == "msstore":
+            lines.append(f"Write-Host 'Telechargement de l installateur natif Store pour {name}...' -ForegroundColor Green")
+            dest = f"$env:TEMP\\InstallPilot_Store_{wid}.exe"
+            store_dl_url = f"https://get.microsoft.com/installer/download/{wid}"
+            lines.append(f"Invoke-WebRequest -Uri '{store_dl_url}' -OutFile \"{dest}\" -UseBasicParsing")
+            lines.append(f"Write-Host 'Veuillez finaliser la mise a jour de {name} dans la fenetre qui vient de s ouvrir.' -ForegroundColor Yellow")
+            lines.append(f"Start-Process -FilePath \"{dest}\" -Wait")
+        else:
+            lines.append(f"Write-Host 'Mise a jour de {name} via Winget...' -ForegroundColor Green")
+            lines.append(f"winget upgrade --id `\"{wid}`\" -e --accept-source-agreements --accept-package-agreements --silent")
+            
     lines.extend([
         "Write-Host ''",
         "Write-Host 'Nettoyage...' -ForegroundColor DarkGray",
