@@ -54,6 +54,7 @@ LANGUAGES = {
         "nav_all":             "Toutes les apps",
         "search_ph":           "Rechercher...",
         "dark_mode":           "Mode sombre",
+        "update_all":          "Tout Mettre à Jour",
     },
     "en": {
         "title":               "InstallPilot",
@@ -104,6 +105,7 @@ LANGUAGES = {
         "nav_all":             "All apps",
         "search_ph":           "Search...",
         "dark_mode":           "Dark mode",
+        "update_all":          "Update All",
     },
 }
 

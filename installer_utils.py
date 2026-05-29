@@ -128,3 +128,135 @@ def _generate_bat_script(exe_rows: list) -> str:
     with open(path, "w", encoding="utf-8") as f:
         f.write("\n".join(lines))
     return path
+
+
+def _generate_ninite_script(exe_rows: list) -> str:
+    import ctypes
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    temp_dir = os.path.join(desktop, ".InstallPilot_Temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        FILE_ATTRIBUTE_HIDDEN = 0x02
+        ctypes.windll.kernel32.SetFileAttributesW(temp_dir, FILE_ATTRIBUTE_HIDDEN)
+    except Exception:
+        pass
+
+    script_path = os.path.join(temp_dir, "InstallPilot_Setup.ps1")
+    
+    lines = [
+        "Write-Host 'InstallPilot - Installation en cours...' -ForegroundColor Cyan",
+        "Write-Host 'Ne fermez pas cette fenetre. Elle se fermera automatiquement a la fin.' -ForegroundColor Yellow",
+        "Write-Host ''",
+    ]
+    
+    for row in exe_rows:
+        app = row.app
+        name = app_name(app)
+        wid = app.get("winget_id")
+        
+        if wid and row.get_source() != "store":
+            lines.append(f"Write-Host 'Installation de {name} via Winget...' -ForegroundColor Green")
+            lines.append(f"winget install --id `\"{wid}`\" -e --accept-source-agreements --accept-package-agreements --silent")
+        else:
+            url = _resolve_download_url(app)
+            if url:
+                lines.append(f"Write-Host 'Telechargement de {name}...' -ForegroundColor Green")
+                ext = ".msi" if url.lower().endswith(".msi") else ".exe"
+                dest = f"$env:TEMP\\InstallPilot_Temp_{app['id']}{ext}"
+                lines.append(f"Invoke-WebRequest -Uri '{url}' -OutFile '{dest}' -UseBasicParsing")
+                lines.append(f"Write-Host 'Installation de {name}...' -ForegroundColor Green")
+                
+                silent_args = _silent_cmd(dest, app)
+                if ext == ".msi":
+                    lines.append(f"Start-Process -FilePath 'msiexec.exe' -ArgumentList '/i', '`\"{dest}`\"', '/qn', '/norestart' -Wait -NoNewWindow")
+                else:
+                    args_str = ", ".join(f"'{arg}'" for arg in silent_args[1:])
+                    if args_str:
+                        lines.append(f"Start-Process -FilePath '{dest}' -ArgumentList {args_str} -Wait -NoNewWindow")
+                    else:
+                        lines.append(f"Start-Process -FilePath '{dest}' -Wait -NoNewWindow")
+            else:
+                lines.append(f"Write-Host 'Impossible d installer {name}: aucun lien direct trouve.' -ForegroundColor Red")
+                official_url = app.get("official_url")
+                if official_url:
+                    lines.append(f"Start-Process '{official_url}'")
+                    
+    lines.append("Write-Host ''")
+    lines.append("Write-Host 'Nettoyage...' -ForegroundColor DarkGray")
+    lines.append(f"Remove-Item -Path '{temp_dir}' -Recurse -Force -ErrorAction SilentlyContinue")
+    lines.append("Write-Host 'Toutes les installations sont terminees !' -ForegroundColor Cyan")
+    lines.append("Start-Sleep -Seconds 3")
+    
+    with open(script_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+        
+    return script_path
+
+def _generate_update_all_script() -> str:
+    import ctypes
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    temp_dir = os.path.join(desktop, ".InstallPilot_Temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        FILE_ATTRIBUTE_HIDDEN = 0x02
+        ctypes.windll.kernel32.SetFileAttributesW(temp_dir, FILE_ATTRIBUTE_HIDDEN)
+    except Exception:
+        pass
+
+    script_path = os.path.join(temp_dir, "InstallPilot_UpdateAll.ps1")
+    
+    lines = [
+        "Write-Host 'InstallPilot - Mise a jour de TOUTES vos applications en cours...' -ForegroundColor Cyan",
+        "Write-Host 'Winget va scanner votre PC et telecharger les dernieres versions.' -ForegroundColor Yellow",
+        "Write-Host 'Ne fermez pas cette fenetre. Elle se fermera automatiquement a la fin.' -ForegroundColor Yellow",
+        "Write-Host ''",
+        "winget upgrade --all --include-unknown --accept-source-agreements --accept-package-agreements",
+        "Write-Host ''",
+        "Write-Host 'Nettoyage...' -ForegroundColor DarkGray",
+        f"Remove-Item -Path '{temp_dir}' -Recurse -Force -ErrorAction SilentlyContinue",
+        "Write-Host 'Mises a jour terminees !' -ForegroundColor Cyan",
+        "Start-Sleep -Seconds 3"
+    ]
+    
+    with open(script_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+        
+    return script_path
+
+def _generate_selective_update_script(ids: list) -> str:
+    import ctypes
+    desktop = os.path.join(os.path.expanduser("~"), "Desktop")
+    temp_dir = os.path.join(desktop, ".InstallPilot_Temp")
+    os.makedirs(temp_dir, exist_ok=True)
+    
+    try:
+        FILE_ATTRIBUTE_HIDDEN = 0x02
+        ctypes.windll.kernel32.SetFileAttributesW(temp_dir, FILE_ATTRIBUTE_HIDDEN)
+    except Exception:
+        pass
+
+    script_path = os.path.join(temp_dir, "InstallPilot_UpdateSelection.ps1")
+    
+    lines = [
+        "Write-Host 'InstallPilot - Mise a jour de la selection en cours...' -ForegroundColor Cyan",
+        "Write-Host 'Ne fermez pas cette fenetre. Elle se fermera automatiquement a la fin.' -ForegroundColor Yellow",
+        "Write-Host ''",
+    ]
+    
+    for wid in ids:
+        lines.append(f"winget upgrade --id `\"{wid}`\" --accept-source-agreements --accept-package-agreements --silent")
+    
+    lines.extend([
+        "Write-Host ''",
+        "Write-Host 'Nettoyage...' -ForegroundColor DarkGray",
+        f"Remove-Item -Path '{temp_dir}' -Recurse -Force -ErrorAction SilentlyContinue",
+        "Write-Host 'Mises a jour terminees !' -ForegroundColor Cyan",
+        "Start-Sleep -Seconds 3"
+    ])
+    
+    with open(script_path, "w", encoding="utf-8") as f:
+        f.write("\n".join(lines))
+        
+    return script_path

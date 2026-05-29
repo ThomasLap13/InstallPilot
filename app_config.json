@@ -2,8 +2,14 @@
   "apps": [
     {
       "id": "chrome",
-      "names": {"fr": "Google Chrome", "en": "Google Chrome"},
-      "description": {"fr": "Navigateur rapide et populaire de Google", "en": "Google's fast and popular web browser"},
+      "names": {
+        "fr": "Google Chrome",
+        "en": "Google Chrome"
+      },
+      "description": {
+        "fr": "Navigateur rapide et populaire de Google",
+        "en": "Google's fast and popular web browser"
+      },
       "short_name": "GCH",
       "color": "#4285f4",
       "icon_path": "icons/chrome.png",
@@ -11,7 +17,9 @@
       "download_url": "https://dl.google.com/chrome/install/ChromeSetup.exe",
       "winget_id": "Google.Chrome",
       "category": "web",
-      "registry_names": ["Google Chrome"],
+      "registry_names": [
+        "Google Chrome"
+      ],
       "check_paths": [
         "C:/Program Files/Google/Chrome/Application/chrome.exe",
         "C:/Program Files (x86)/Google/Chrome/Application/chrome.exe",
@@ -20,8 +28,14 @@
     },
     {
       "id": "firefox",
-      "names": {"fr": "Mozilla Firefox", "en": "Mozilla Firefox"},
-      "description": {"fr": "Navigateur libre axé sur la vie privée", "en": "Free, open-source, privacy-focused browser"},
+      "names": {
+        "fr": "Mozilla Firefox",
+        "en": "Mozilla Firefox"
+      },
+      "description": {
+        "fr": "Navigateur libre axé sur la vie privée",
+        "en": "Free, open-source, privacy-focused browser"
+      },
       "short_name": "FF",
       "color": "#FF7139",
       "icon_path": "icons/firefox.png",
@@ -29,7 +43,9 @@
       "download_url": "https://download.mozilla.org/?product=firefox-latest-ssl&os=win64&lang=fr",
       "winget_id": "Mozilla.Firefox",
       "category": "web",
-      "registry_names": ["Mozilla Firefox"],
+      "registry_names": [
+        "Mozilla Firefox"
+      ],
       "check_paths": [
         "C:/Program Files/Mozilla Firefox/firefox.exe",
         "C:/Program Files (x86)/Mozilla Firefox/firefox.exe"
@@ -37,15 +53,23 @@
     },
     {
       "id": "brave",
-      "names": {"fr": "Brave", "en": "Brave"},
-      "description": {"fr": "Navigateur avec blocage des pubs intégré", "en": "Browser with built-in ad and tracker blocking"},
+      "names": {
+        "fr": "Brave",
+        "en": "Brave"
+      },
+      "description": {
+        "fr": "Navigateur avec blocage des pubs intégré",
+        "en": "Browser with built-in ad and tracker blocking"
+      },
       "short_name": "BRV",
       "color": "#FB542B",
       "icon_path": "icons/brave.png",
       "official_url": "https://brave.com/download/",
       "winget_id": "Brave.Brave",
       "category": "web",
-      "registry_names": ["Brave"],
+      "registry_names": [
+        "Brave"
+      ],
       "check_paths": [
         "C:/Program Files/BraveSoftware/Brave-Browser/Application/brave.exe",
         "%LOCALAPPDATA%/BraveSoftware/Brave-Browser/Application/brave.exe"
@@ -53,18 +77,28 @@
     },
     {
       "id": "discord",
-      "names": {"fr": "Discord", "en": "Discord"},
-      "description": {"fr": "Chat vocal, vidéo et texte pour la communauté et les gamers", "en": "Voice, video and text chat for communities and gamers"},
+      "names": {
+        "fr": "Discord",
+        "en": "Discord"
+      },
+      "description": {
+        "fr": "Chat vocal, vidéo et texte pour la communauté et les gamers",
+        "en": "Voice, video and text chat for communities and gamers"
+      },
       "short_name": "DSC",
       "color": "#5865f2",
       "icon_path": "icons/discord.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH516QQ",
+      "store_url": "ms-windows-store://pdp/?ProductId=XPDC2RH70K22MN",
       "official_url": "https://discord.com/download",
       "download_url": "https://discord.com/api/downloads/distributions/app/installers/latest?channel=stable&platform=win&arch=x86",
       "winget_id": "Discord.Discord",
       "category": "messaging",
-      "registry_names": ["Discord"],
-      "appx_names": ["Discord.Discord"],
+      "registry_names": [
+        "Discord"
+      ],
+      "appx_names": [
+        "Discord.Discord"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Discord/app-*/Discord.exe",
         "C:/Program Files/Discord/Discord.exe",
@@ -73,17 +107,28 @@
     },
     {
       "id": "teams",
-      "names": {"fr": "Microsoft Teams", "en": "Microsoft Teams"},
-      "description": {"fr": "Messagerie, visioconférence et collaboration Microsoft", "en": "Microsoft messaging, video calls and collaboration"},
+      "names": {
+        "fr": "Microsoft Teams",
+        "en": "Microsoft Teams"
+      },
+      "description": {
+        "fr": "Messagerie, visioconférence et collaboration Microsoft",
+        "en": "Microsoft messaging, video calls and collaboration"
+      },
       "short_name": "MST",
       "color": "#6264A7",
       "icon_path": "icons/teams.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9MSPC6MP8FM4",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP8BT8DW290MPQ",
       "official_url": "https://www.microsoft.com/microsoft-teams/download-app",
       "winget_id": "Microsoft.Teams",
       "category": "messaging",
-      "registry_names": ["Microsoft Teams"],
-      "appx_names": ["MSTeams", "Microsoft.Teams"],
+      "registry_names": [
+        "Microsoft Teams"
+      ],
+      "appx_names": [
+        "MSTeams",
+        "Microsoft.Teams"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Microsoft/Teams/current/Teams.exe",
         "%APPDATA%/Microsoft/Teams/current/Teams.exe",
@@ -95,8 +140,14 @@
     },
     {
       "id": "whatsapp",
-      "names": {"fr": "WhatsApp", "en": "WhatsApp"},
-      "description": {"fr": "Messagerie instantanée de Meta, chiffrement de bout en bout", "en": "Meta's end-to-end encrypted instant messaging app"},
+      "names": {
+        "fr": "WhatsApp",
+        "en": "WhatsApp"
+      },
+      "description": {
+        "fr": "Messagerie instantanée de Meta, chiffrement de bout en bout",
+        "en": "Meta's end-to-end encrypted instant messaging app"
+      },
       "short_name": "WA",
       "color": "#25D366",
       "icon_path": "icons/whatsapp.png",
@@ -104,8 +155,12 @@
       "official_url": "https://www.whatsapp.com/download",
       "winget_id": "9NKSQGP7F2NH",
       "category": "messaging",
-      "registry_names": ["WhatsApp"],
-      "appx_names": ["5319275A.WhatsAppDesktop"],
+      "registry_names": [
+        "WhatsApp"
+      ],
+      "appx_names": [
+        "5319275A.WhatsAppDesktop"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/WhatsApp/WhatsApp.exe",
         "%LOCALAPPDATA%/Microsoft/WindowsApps/WhatsApp.exe",
@@ -114,8 +169,14 @@
     },
     {
       "id": "steam",
-      "names": {"fr": "Steam", "en": "Steam"},
-      "description": {"fr": "Plateforme de jeux PC de Valve avec 50 000+ titres", "en": "Valve's PC gaming platform with 50,000+ titles"},
+      "names": {
+        "fr": "Steam",
+        "en": "Steam"
+      },
+      "description": {
+        "fr": "Plateforme de jeux PC de Valve avec 50 000+ titres",
+        "en": "Valve's PC gaming platform with 50,000+ titles"
+      },
       "short_name": "STEAM",
       "color": "#1b2838",
       "icon_path": "icons/steam.png",
@@ -123,7 +184,9 @@
       "download_url": "https://cdn.akamai.steamstatic.com/client/installer/SteamSetup.exe",
       "winget_id": "Valve.Steam",
       "category": "games",
-      "registry_names": ["Steam"],
+      "registry_names": [
+        "Steam"
+      ],
       "check_paths": [
         "C:/Program Files (x86)/Steam/Steam.exe",
         "C:/Program Files/Steam/Steam.exe"
@@ -131,15 +194,25 @@
     },
     {
       "id": "epic",
-      "names": {"fr": "Epic Games Launcher", "en": "Epic Games Launcher"},
-      "description": {"fr": "Launcher de la boutique Epic Games, jeux gratuits mensuels", "en": "Epic Games Store launcher with free monthly games"},
+      "names": {
+        "fr": "Epic Games Launcher",
+        "en": "Epic Games Launcher"
+      },
+      "description": {
+        "fr": "Launcher de la boutique Epic Games, jeux gratuits mensuels",
+        "en": "Epic Games Store launcher with free monthly games"
+      },
       "short_name": "EPIC",
       "color": "#2a2a2a",
       "icon_path": "icons/epic.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP99VR1BPSBQJ2",
       "official_url": "https://store.epicgames.com/en-US/download",
       "winget_id": "EpicGames.EpicGamesLauncher",
       "category": "games",
-      "registry_names": ["Epic Games Launcher", "Epic Games"],
+      "registry_names": [
+        "Epic Games Launcher",
+        "Epic Games"
+      ],
       "check_paths": [
         "C:/Program Files (x86)/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe",
         "C:/Program Files/Epic Games/Launcher/Portal/Binaries/Win64/EpicGamesLauncher.exe"
@@ -147,18 +220,33 @@
     },
     {
       "id": "obs",
-      "names": {"fr": "OBS Studio", "en": "OBS Studio"},
-      "description": {"fr": "Enregistrement et streaming vidéo gratuit et open-source", "en": "Free, open-source video recording and live streaming"},
+      "names": {
+        "fr": "OBS Studio",
+        "en": "OBS Studio"
+      },
+      "description": {
+        "fr": "Enregistrement et streaming vidéo gratuit et open-source",
+        "en": "Free, open-source video recording and live streaming"
+      },
       "short_name": "OBS",
       "color": "#1f5bb5",
       "icon_path": "icons/obs.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NHB6J8HPMF1",
+      "store_url": "ms-windows-store://pdp/?ProductId=XPFFH613W8V6LV",
       "official_url": "https://obsproject.com/download",
-      "download_resolver": {"type": "github", "owner": "obsproject", "repo": "obs-studio", "pattern": "OBS-Studio-.*-Windows-Installer\\.exe"},
+      "download_resolver": {
+        "type": "github",
+        "owner": "obsproject",
+        "repo": "obs-studio",
+        "pattern": "OBS-Studio-.*-Windows-Installer\\.exe"
+      },
       "winget_id": "OBSProject.OBSStudio",
       "category": "media",
-      "registry_names": ["OBS Studio"],
-      "appx_names": ["OBSProject.OBSStudio"],
+      "registry_names": [
+        "OBS Studio"
+      ],
+      "appx_names": [
+        "OBSProject.OBSStudio"
+      ],
       "check_paths": [
         "C:/Program Files/obs-studio/bin/64bit/obs64.exe",
         "C:/Program Files (x86)/obs-studio/bin/64bit/obs64.exe",
@@ -168,16 +256,26 @@
     },
     {
       "id": "vlc",
-      "names": {"fr": "VLC media player", "en": "VLC media player"},
-      "description": {"fr": "Lecteur multimédia universel qui lit presque tout", "en": "Universal media player that plays almost everything"},
+      "names": {
+        "fr": "VLC media player",
+        "en": "VLC media player"
+      },
+      "description": {
+        "fr": "Lecteur multimédia universel qui lit presque tout",
+        "en": "Universal media player that plays almost everything"
+      },
       "short_name": "VLC",
       "color": "#FF8800",
       "icon_path": "icons/vlc.png",
       "official_url": "https://www.videolan.org/vlc/download-windows.html",
-      "download_resolver": {"type": "vlc"},
+      "download_resolver": {
+        "type": "vlc"
+      },
       "winget_id": "VideoLAN.VLC",
       "category": "media",
-      "registry_names": ["VLC media player"],
+      "registry_names": [
+        "VLC media player"
+      ],
       "check_paths": [
         "C:/Program Files/VideoLAN/VLC/vlc.exe",
         "C:/Program Files (x86)/VideoLAN/VLC/vlc.exe"
@@ -185,8 +283,14 @@
     },
     {
       "id": "spotify",
-      "names": {"fr": "Spotify", "en": "Spotify"},
-      "description": {"fr": "Streaming musical avec plus de 100 millions de titres", "en": "Music streaming with over 100 million tracks"},
+      "names": {
+        "fr": "Spotify",
+        "en": "Spotify"
+      },
+      "description": {
+        "fr": "Streaming musical avec plus de 100 millions de titres",
+        "en": "Music streaming with over 100 million tracks"
+      },
       "short_name": "SPT",
       "color": "#1DB954",
       "icon_path": "icons/spotify.png",
@@ -195,8 +299,12 @@
       "download_url": "https://download.scdn.co/SpotifySetup.exe",
       "winget_id": "Spotify.Spotify",
       "category": "media",
-      "registry_names": ["Spotify"],
-      "appx_names": ["SpotifyAB.SpotifyMusic"],
+      "registry_names": [
+        "Spotify"
+      ],
+      "appx_names": [
+        "SpotifyAB.SpotifyMusic"
+      ],
       "check_paths": [
         "%APPDATA%/Spotify/Spotify.exe",
         "%LOCALAPPDATA%/Microsoft/WindowsApps/Spotify.exe",
@@ -205,8 +313,14 @@
     },
     {
       "id": "apple_music",
-      "names": {"fr": "Apple Music", "en": "Apple Music"},
-      "description": {"fr": "Service de streaming musical Apple disponible sur Windows", "en": "Apple's music streaming service, available on Windows"},
+      "names": {
+        "fr": "Apple Music",
+        "en": "Apple Music"
+      },
+      "description": {
+        "fr": "Service de streaming musical Apple disponible sur Windows",
+        "en": "Apple's music streaming service, available on Windows"
+      },
       "short_name": "APM",
       "color": "#FC3C44",
       "icon_path": "icons/apple_music.png",
@@ -214,8 +328,12 @@
       "official_url": "https://www.apple.com/apple-music/",
       "winget_id": "Apple.Music",
       "category": "media",
-      "registry_names": ["Apple Music"],
-      "appx_names": ["AppleInc.AppleMusicWin"],
+      "registry_names": [
+        "Apple Music"
+      ],
+      "appx_names": [
+        "AppleInc.AppleMusicWin"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Packages/AppleInc.AppleMusicWin_*/",
         "%LOCALAPPDATA%/Packages/AppleInc.AppleMusic_*/",
@@ -224,8 +342,14 @@
     },
     {
       "id": "deezer",
-      "names": {"fr": "Deezer", "en": "Deezer"},
-      "description": {"fr": "Streaming musical français avec option HiFi sans compression", "en": "French music streaming with lossless HiFi option"},
+      "names": {
+        "fr": "Deezer",
+        "en": "Deezer"
+      },
+      "description": {
+        "fr": "Streaming musical français avec option HiFi sans compression",
+        "en": "French music streaming with lossless HiFi option"
+      },
       "short_name": "DZR",
       "color": "#A238FF",
       "icon_path": "icons/deezer.png",
@@ -233,8 +357,13 @@
       "official_url": "https://www.deezer.com/en/download",
       "winget_id": "Deezer.Deezer",
       "category": "media",
-      "registry_names": ["Deezer"],
-      "appx_names": ["Deezer.62021768415AF", "Deezer.Deezer"],
+      "registry_names": [
+        "Deezer"
+      ],
+      "appx_names": [
+        "Deezer.62021768415AF",
+        "Deezer.Deezer"
+      ],
       "check_paths": [
         "C:/Program Files/WindowsApps/Deezer.*/",
         "%LOCALAPPDATA%/Packages/Deezer.*/",
@@ -244,8 +373,14 @@
     },
     {
       "id": "plex",
-      "names": {"fr": "Plex", "en": "Plex"},
-      "description": {"fr": "Serveur et client multimédia pour votre bibliothèque perso", "en": "Media server and client for your personal library"},
+      "names": {
+        "fr": "Plex",
+        "en": "Plex"
+      },
+      "description": {
+        "fr": "Serveur et client multimédia pour votre bibliothèque perso",
+        "en": "Media server and client for your personal library"
+      },
       "short_name": "PLEX",
       "color": "#E5A00D",
       "icon_path": "icons/plex.png",
@@ -253,7 +388,9 @@
       "official_url": "https://www.plex.tv/media-server-downloads/#plex-app",
       "winget_id": "Plex.Plex",
       "category": "media",
-      "registry_names": ["Plex"],
+      "registry_names": [
+        "Plex"
+      ],
       "check_paths": [
         "C:/Program Files/Plex/Plex/Plex.exe",
         "%LOCALAPPDATA%/Plex/Plex.exe",
@@ -262,17 +399,27 @@
     },
     {
       "id": "notion",
-      "names": {"fr": "Notion", "en": "Notion"},
-      "description": {"fr": "Notes, bases de données et gestion de projet tout-en-un", "en": "All-in-one notes, databases and project management"},
+      "names": {
+        "fr": "Notion",
+        "en": "Notion"
+      },
+      "description": {
+        "fr": "Notes, bases de données et gestion de projet tout-en-un",
+        "en": "All-in-one notes, databases and project management"
+      },
       "short_name": "NOT",
       "color": "#191919",
       "icon_path": "icons/notion.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9MZHT89HP7PH",
+      "store_url": "ms-windows-store://pdp/?ProductId=XPDBVSS44R0L9H",
       "official_url": "https://www.notion.so/desktop",
       "winget_id": "Notion.Notion",
       "category": "productivity",
-      "registry_names": ["Notion"],
-      "appx_names": ["Notion.Notion"],
+      "registry_names": [
+        "Notion"
+      ],
+      "appx_names": [
+        "Notion.Notion"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Programs/Notion/Notion.exe",
         "%LOCALAPPDATA%/Packages/Notion.Notion_*/"
@@ -280,15 +427,23 @@
     },
     {
       "id": "libreoffice",
-      "names": {"fr": "LibreOffice", "en": "LibreOffice"},
-      "description": {"fr": "Suite bureautique complète et gratuite (Writer, Calc, Impress...)", "en": "Full-featured free office suite (Writer, Calc, Impress...)"},
+      "names": {
+        "fr": "LibreOffice",
+        "en": "LibreOffice"
+      },
+      "description": {
+        "fr": "Suite bureautique complète et gratuite (Writer, Calc, Impress...)",
+        "en": "Full-featured free office suite (Writer, Calc, Impress...)"
+      },
       "short_name": "LO",
       "color": "#18A303",
       "icon_path": "icons/libreoffice.png",
       "official_url": "https://www.libreoffice.org/download/download-libreoffice/",
       "winget_id": "TheDocumentFoundation.LibreOffice",
       "category": "productivity",
-      "registry_names": ["LibreOffice"],
+      "registry_names": [
+        "LibreOffice"
+      ],
       "check_paths": [
         "C:/Program Files/LibreOffice/program/soffice.exe",
         "C:/Program Files (x86)/LibreOffice/program/soffice.exe"
@@ -296,8 +451,14 @@
     },
     {
       "id": "outlook_new",
-      "names": {"fr": "Outlook", "en": "Outlook"},
-      "description": {"fr": "Client email et calendrier Microsoft nouvelle génération", "en": "Next-generation Microsoft email and calendar client"},
+      "names": {
+        "fr": "Outlook",
+        "en": "Outlook"
+      },
+      "description": {
+        "fr": "Client email et calendrier Microsoft nouvelle génération",
+        "en": "Next-generation Microsoft email and calendar client"
+      },
       "short_name": "OLK",
       "color": "#0078d4",
       "icon_path": "icons/outlook_new.png",
@@ -305,8 +466,13 @@
       "official_url": "https://www.microsoft.com/en-us/microsoft-365/outlook/email-and-calendar-software-microsoft-outlook",
       "winget_id": "Microsoft.OutlookForWindows",
       "category": "productivity",
-      "registry_names": ["Microsoft Outlook", "Outlook"],
-      "appx_names": ["Microsoft.OutlookForWindows"],
+      "registry_names": [
+        "Microsoft Outlook",
+        "Outlook"
+      ],
+      "appx_names": [
+        "Microsoft.OutlookForWindows"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Packages/Microsoft.OutlookForWindows_*/",
         "%LOCALAPPDATA%/Microsoft/WindowsApps/olk.exe"
@@ -314,14 +480,22 @@
     },
     {
       "id": "antigravity",
-      "names": {"fr": "Antigravity", "en": "Antigravity"},
-      "description": {"fr": "Application de productivité et d'organisation personnelle", "en": "Personal productivity and organization app"},
+      "names": {
+        "fr": "Antigravity",
+        "en": "Antigravity"
+      },
+      "description": {
+        "fr": "Application de productivité et d'organisation personnelle",
+        "en": "Personal productivity and organization app"
+      },
       "short_name": "ANT",
       "color": "#009688",
       "icon_path": "icons/antigravity.png",
       "official_url": "https://antigravity.app/download",
       "category": "productivity",
-      "registry_names": ["Antigravity"],
+      "registry_names": [
+        "Antigravity"
+      ],
       "check_paths": [
         "C:/Program Files/Antigravity/Antigravity.exe",
         "C:/Program Files (x86)/Antigravity/Antigravity.exe",
@@ -332,17 +506,27 @@
     },
     {
       "id": "keepass",
-      "names": {"fr": "KeePass", "en": "KeePass"},
-      "description": {"fr": "Gestionnaire de mots de passe open-source stocké localement", "en": "Open-source password manager stored locally"},
+      "names": {
+        "fr": "KeePass",
+        "en": "KeePass"
+      },
+      "description": {
+        "fr": "Gestionnaire de mots de passe open-source stocké localement",
+        "en": "Open-source password manager stored locally"
+      },
       "short_name": "KPS",
       "color": "#6cac20",
       "icon_path": "icons/keepass.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4R1W1",
       "official_url": "https://keepass.info/download.html",
       "winget_id": "KeePass.KeePass",
       "category": "security",
-      "registry_names": ["KeePass Password Safe", "KeePass"],
-      "appx_names": ["DominikReichl.KeePass"],
+      "registry_names": [
+        "KeePass Password Safe",
+        "KeePass"
+      ],
+      "appx_names": [
+        "DominikReichl.KeePass"
+      ],
       "check_paths": [
         "C:/Program Files/KeePass Password Safe 2/KeePass.exe",
         "C:/Program Files (x86)/KeePass Password Safe 2/KeePass.exe",
@@ -351,16 +535,26 @@
     },
     {
       "id": "7zip",
-      "names": {"fr": "7-Zip", "en": "7-Zip"},
-      "description": {"fr": "Archiveur puissant supportant 7z, ZIP, RAR et plus", "en": "Powerful archiver supporting 7z, ZIP, RAR and more"},
+      "names": {
+        "fr": "7-Zip",
+        "en": "7-Zip"
+      },
+      "description": {
+        "fr": "Archiveur puissant supportant 7z, ZIP, RAR et plus",
+        "en": "Powerful archiver supporting 7z, ZIP, RAR and more"
+      },
       "short_name": "7ZIP",
       "color": "#009900",
       "icon_path": "icons/7zip.png",
       "official_url": "https://www.7-zip.org/download.html",
-      "download_resolver": {"type": "7zip"},
+      "download_resolver": {
+        "type": "7zip"
+      },
       "winget_id": "7zip.7zip",
       "category": "utilities",
-      "registry_names": ["7-Zip"],
+      "registry_names": [
+        "7-Zip"
+      ],
       "check_paths": [
         "C:/Program Files/7-Zip/7zFM.exe",
         "C:/Program Files (x86)/7-Zip/7zFM.exe"
@@ -368,15 +562,23 @@
     },
     {
       "id": "everything",
-      "names": {"fr": "Everything", "en": "Everything"},
-      "description": {"fr": "Recherche de fichiers et dossiers instantanée sur Windows", "en": "Instant file and folder search across Windows"},
+      "names": {
+        "fr": "Everything",
+        "en": "Everything"
+      },
+      "description": {
+        "fr": "Recherche de fichiers et dossiers instantanée sur Windows",
+        "en": "Instant file and folder search across Windows"
+      },
       "short_name": "EVR",
       "color": "#1C5FB5",
       "icon_path": "icons/everything.png",
       "official_url": "https://www.voidtools.com/downloads/",
       "winget_id": "voidtools.Everything",
       "category": "utilities",
-      "registry_names": ["Everything"],
+      "registry_names": [
+        "Everything"
+      ],
       "check_paths": [
         "C:/Program Files/Everything/Everything.exe",
         "C:/Program Files (x86)/Everything/Everything.exe"
@@ -384,18 +586,35 @@
     },
     {
       "id": "powertoys",
-      "names": {"fr": "PowerToys", "en": "PowerToys"},
-      "description": {"fr": "Utilitaires système avancés Microsoft : FancyZones, PowerRename...", "en": "Advanced Microsoft system utilities: FancyZones, PowerRename..."},
+      "names": {
+        "fr": "PowerToys",
+        "en": "PowerToys"
+      },
+      "description": {
+        "fr": "Utilitaires système avancés Microsoft : FancyZones, PowerRename...",
+        "en": "Advanced Microsoft system utilities: FancyZones, PowerRename..."
+      },
       "short_name": "PT",
       "color": "#0078d4",
       "icon_path": "icons/powertoys.png",
       "store_url": "ms-windows-store://pdp/?ProductId=XP89DCGQ3K6VLD",
       "official_url": "https://github.com/microsoft/PowerToys/releases/latest",
-      "download_resolver": {"type": "github", "owner": "microsoft", "repo": "PowerToys", "pattern": "PowerToysSetup-.*-x64\\.exe"},
+      "download_resolver": {
+        "type": "github",
+        "owner": "microsoft",
+        "repo": "PowerToys",
+        "pattern": "PowerToysSetup-.*-x64\\.exe"
+      },
       "winget_id": "Microsoft.PowerToys",
       "category": "utilities",
-      "registry_names": ["PowerToys", "Microsoft PowerToys", "PowerToys (Preview)"],
-      "appx_names": ["Microsoft.PowerToys"],
+      "registry_names": [
+        "PowerToys",
+        "Microsoft PowerToys",
+        "PowerToys (Preview)"
+      ],
+      "appx_names": [
+        "Microsoft.PowerToys"
+      ],
       "check_paths": [
         "C:/Program Files/PowerToys/PowerToys.exe",
         "%LOCALAPPDATA%/Microsoft/PowerToys/PowerToys.exe",
@@ -404,8 +623,14 @@
     },
     {
       "id": "lenovo_vantage",
-      "names": {"fr": "Lenovo Vantage", "en": "Lenovo Vantage"},
-      "description": {"fr": "Gestion des pilotes, réglages et diagnostics Lenovo", "en": "Lenovo driver management, settings and diagnostics"},
+      "names": {
+        "fr": "Lenovo Vantage",
+        "en": "Lenovo Vantage"
+      },
+      "description": {
+        "fr": "Gestion des pilotes, réglages et diagnostics Lenovo",
+        "en": "Lenovo driver management, settings and diagnostics"
+      },
       "short_name": "LNV",
       "color": "#E2231A",
       "icon_path": "icons/lenovo_vantage.png",
@@ -413,8 +638,12 @@
       "official_url": "https://www.lenovo.com/us/en/software/vantage",
       "winget_id": "Lenovo.LenovoVantage",
       "category": "utilities",
-      "registry_names": ["Lenovo Vantage"],
-      "appx_names": ["E046963F.LenovoCompanion"],
+      "registry_names": [
+        "Lenovo Vantage"
+      ],
+      "appx_names": [
+        "E046963F.LenovoCompanion"
+      ],
       "check_paths": [
         "%LOCALAPPDATA%/Packages/E046963F.LenovoCompanion_*/",
         "C:/Program Files (x86)/Lenovo/VantageService/*/LenovoVantageService.exe"
@@ -422,15 +651,23 @@
     },
     {
       "id": "nvidia_app",
-      "names": {"fr": "NVIDIA App", "en": "NVIDIA App"},
-      "description": {"fr": "Pilotes, overlay et optimisation des jeux NVIDIA", "en": "NVIDIA drivers, in-game overlay and game optimization"},
+      "names": {
+        "fr": "NVIDIA App",
+        "en": "NVIDIA App"
+      },
+      "description": {
+        "fr": "Pilotes, overlay et optimisation des jeux NVIDIA",
+        "en": "NVIDIA drivers, in-game overlay and game optimization"
+      },
       "short_name": "NVD",
       "color": "#76B900",
       "icon_path": "icons/nvidia_app.png",
       "official_url": "https://www.nvidia.com/en-us/software/nvidia-app/",
       "winget_id": "Nvidia.NvidiaApp",
       "category": "utilities",
-      "registry_names": ["NVIDIA App"],
+      "registry_names": [
+        "NVIDIA App"
+      ],
       "check_paths": [
         "C:/Program Files/NVIDIA Corporation/NVIDIA App/CEF/NVIDIA App.exe",
         "C:/Program Files/NVIDIA Corporation/NVIDIA App/CEF/NvidiaApp.exe",
@@ -439,15 +676,23 @@
     },
     {
       "id": "cpuz",
-      "names": {"fr": "CPU-Z", "en": "CPU-Z"},
-      "description": {"fr": "Informations détaillées sur le processeur, la RAM et la carte mère", "en": "Detailed info on CPU, RAM and motherboard"},
+      "names": {
+        "fr": "CPU-Z",
+        "en": "CPU-Z"
+      },
+      "description": {
+        "fr": "Informations détaillées sur le processeur, la RAM et la carte mère",
+        "en": "Detailed info on CPU, RAM and motherboard"
+      },
       "short_name": "CPZ",
       "color": "#E8292F",
       "icon_path": "icons/cpuz.png",
       "official_url": "https://www.cpuid.com/softwares/cpu-z.html",
       "winget_id": "CPUID.CPU-Z",
       "category": "utilities",
-      "registry_names": ["CPU-Z"],
+      "registry_names": [
+        "CPU-Z"
+      ],
       "check_paths": [
         "C:/Program Files/CPUID/CPU-Z/cpuz.exe",
         "C:/Program Files (x86)/CPUID/CPU-Z/cpuz.exe"
@@ -455,18 +700,29 @@
     },
     {
       "id": "vscode",
-      "names": {"fr": "Visual Studio Code", "en": "Visual Studio Code"},
-      "description": {"fr": "Éditeur de code léger, extensible et gratuit de Microsoft", "en": "Lightweight, extensible and free code editor by Microsoft"},
+      "names": {
+        "fr": "Visual Studio Code",
+        "en": "Visual Studio Code"
+      },
+      "description": {
+        "fr": "Éditeur de code léger, extensible et gratuit de Microsoft",
+        "en": "Lightweight, extensible and free code editor by Microsoft"
+      },
       "short_name": "VS",
       "color": "#0078d4",
       "icon_path": "icons/vscode.png",
-      "store_url": "ms-windows-store://pdp/?ProductId=9NBLGGH4NNS1",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP9KHM4BK9FZ7Q",
       "official_url": "https://code.visualstudio.com/Download",
       "download_url": "https://code.visualstudio.com/sha/download?build=stable&os=win32-x64-user",
       "winget_id": "Microsoft.VisualStudioCode",
       "category": "dev_tools",
-      "registry_names": ["Microsoft Visual Studio Code", "Visual Studio Code"],
-      "appx_names": ["Microsoft.VisualStudioCode"],
+      "registry_names": [
+        "Microsoft Visual Studio Code",
+        "Visual Studio Code"
+      ],
+      "appx_names": [
+        "Microsoft.VisualStudioCode"
+      ],
       "check_paths": [
         "C:/Program Files/Microsoft VS Code/Code.exe",
         "C:/Program Files (x86)/Microsoft VS Code/Code.exe",
@@ -476,16 +732,29 @@
     },
     {
       "id": "git",
-      "names": {"fr": "Git", "en": "Git"},
-      "description": {"fr": "Gestionnaire de versions décentralisé, indispensable pour le dev", "en": "Distributed version control system, essential for development"},
+      "names": {
+        "fr": "Git",
+        "en": "Git"
+      },
+      "description": {
+        "fr": "Gestionnaire de versions décentralisé, indispensable pour le dev",
+        "en": "Distributed version control system, essential for development"
+      },
       "short_name": "GIT",
       "color": "#F05032",
       "icon_path": "icons/git.png",
       "official_url": "https://git-scm.com/download/win",
-      "download_resolver": {"type": "github", "owner": "git-for-windows", "repo": "git", "pattern": "Git-.*-64-bit\\.exe"},
+      "download_resolver": {
+        "type": "github",
+        "owner": "git-for-windows",
+        "repo": "git",
+        "pattern": "Git-.*-64-bit\\.exe"
+      },
       "winget_id": "Git.Git",
       "category": "dev_tools",
-      "registry_names": ["Git"],
+      "registry_names": [
+        "Git"
+      ],
       "check_paths": [
         "C:/Program Files/Git/bin/git.exe",
         "C:/Program Files (x86)/Git/bin/git.exe"
@@ -493,15 +762,25 @@
     },
     {
       "id": "python",
-      "names": {"fr": "Python", "en": "Python"},
-      "description": {"fr": "Langage de programmation polyvalent, populaire pour le scripting et l'IA", "en": "Versatile language popular for scripting, data science and AI"},
+      "names": {
+        "fr": "Python",
+        "en": "Python"
+      },
+      "description": {
+        "fr": "Langage de programmation polyvalent, populaire pour le scripting et l'IA",
+        "en": "Versatile language popular for scripting, data science and AI"
+      },
       "short_name": "PY",
       "color": "#3776AB",
       "icon_path": "icons/python.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=9PNRBTZXMB4Z",
       "official_url": "https://www.python.org/downloads/windows/",
       "winget_id": "Python.Python.3",
       "category": "dev_tools",
-      "registry_names": ["Python 3", "Python 2"],
+      "registry_names": [
+        "Python 3",
+        "Python 2"
+      ],
       "check_paths": [
         "C:/Program Files/Python3*/python.exe",
         "C:/Program Files (x86)/Python3*/python.exe",
@@ -512,16 +791,26 @@
     },
     {
       "id": "nodejs",
-      "names": {"fr": "Node.js", "en": "Node.js"},
-      "description": {"fr": "Runtime JavaScript côté serveur, base de l'écosystème npm", "en": "Server-side JavaScript runtime, backbone of the npm ecosystem"},
+      "names": {
+        "fr": "Node.js",
+        "en": "Node.js"
+      },
+      "description": {
+        "fr": "Runtime JavaScript côté serveur, base de l'écosystème npm",
+        "en": "Server-side JavaScript runtime, backbone of the npm ecosystem"
+      },
       "short_name": "NODE",
       "color": "#339933",
       "icon_path": "icons/nodejs.png",
       "official_url": "https://nodejs.org/en/download/",
-      "download_resolver": {"type": "nodejs"},
+      "download_resolver": {
+        "type": "nodejs"
+      },
       "winget_id": "OpenJS.NodeJS",
       "category": "dev_tools",
-      "registry_names": ["Node.js"],
+      "registry_names": [
+        "Node.js"
+      ],
       "check_paths": [
         "C:/Program Files/nodejs/node.exe",
         "C:/Program Files (x86)/nodejs/node.exe"
@@ -529,18 +818,266 @@
     },
     {
       "id": "docker",
-      "names": {"fr": "Docker Desktop", "en": "Docker Desktop"},
-      "description": {"fr": "Conteneurisation d'applications avec interface graphique", "en": "Application containerization with a graphical interface"},
+      "names": {
+        "fr": "Docker Desktop",
+        "en": "Docker Desktop"
+      },
+      "description": {
+        "fr": "Conteneurisation d'applications avec interface graphique",
+        "en": "Application containerization with a graphical interface"
+      },
       "short_name": "DCK",
       "color": "#2496ED",
       "icon_path": "icons/docker.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP8CBJ40XLBWKX",
       "official_url": "https://www.docker.com/products/docker-desktop/",
       "download_url": "https://desktop.docker.com/win/main/amd64/Docker%20Desktop%20Installer.exe",
       "winget_id": "Docker.DockerDesktop",
       "category": "dev_tools",
-      "registry_names": ["Docker Desktop"],
+      "registry_names": [
+        "Docker Desktop"
+      ],
       "check_paths": [
         "C:/Program Files/Docker/Docker/Docker Desktop.exe"
+      ]
+    },
+    {
+      "id": "teamviewer",
+      "names": {
+        "fr": "TeamViewer",
+        "en": "TeamViewer"
+      },
+      "description": {
+        "fr": "Logiciel de contrôle à distance et d'assistance",
+        "en": "Remote control and support software"
+      },
+      "short_name": "TMV",
+      "color": "#0055c8",
+      "icon_path": "icons/teamviewer.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XPDM17HK323C4X",
+      "official_url": "https://www.teamviewer.com",
+      "winget_id": "TeamViewer.TeamViewer",
+      "category": "utilities",
+      "registry_names": [
+        "TeamViewer"
+      ],
+      "check_paths": [
+        "C:/Program Files/TeamViewer/TeamViewer.exe",
+        "C:/Program Files (x86)/TeamViewer/TeamViewer.exe"
+      ]
+    },
+    {
+      "id": "winrar",
+      "names": {
+        "fr": "WinRAR",
+        "en": "WinRAR"
+      },
+      "description": {
+        "fr": "Logiciel de compression et décompression d'archives",
+        "en": "Archive compression and decompression software"
+      },
+      "short_name": "RAR",
+      "color": "#121A4B",
+      "icon_path": "icons/winrar.png",
+      "official_url": "https://www.rarlab.com/download.htm",
+      "winget_id": "RARLab.WinRAR",
+      "category": "utilities",
+      "registry_names": [
+        "WinRAR"
+      ],
+      "check_paths": [
+        "C:/Program Files/WinRAR/WinRAR.exe"
+      ]
+    },
+    {
+      "id": "synology_drive",
+      "names": {
+        "fr": "Synology Drive",
+        "en": "Synology Drive Client"
+      },
+      "description": {
+        "fr": "Synchronisation de fichiers avec votre NAS Synology",
+        "en": "File sync and backup with your Synology NAS"
+      },
+      "short_name": "SYN",
+      "color": "#005a9c",
+      "icon_path": "icons/synology_drive.png",
+      "official_url": "https://www.synology.com/support/download",
+      "winget_id": "Synology.SynologyDriveClient",
+      "category": "utilities",
+      "registry_names": [
+        "Synology Drive Client"
+      ],
+      "check_paths": [
+        "C:/Program Files (x86)/Synology/SynologyDrive/bin/launcher.exe",
+        "C:/Program Files (x86)/Synology/SynologyDrive/launcher.exe"
+      ]
+    },
+    {
+      "id": "handbrake",
+      "names": {
+        "fr": "HandBrake",
+        "en": "HandBrake"
+      },
+      "description": {
+        "fr": "Convertisseur vidéo open-source multiformat",
+        "en": "Open-source video transcoder"
+      },
+      "short_name": "HBK",
+      "color": "#2a2a2a",
+      "icon_path": "icons/handbrake.png",
+      "official_url": "https://handbrake.fr/",
+      "winget_id": "HandBrake.HandBrake",
+      "category": "media",
+      "registry_names": [
+        "HandBrake"
+      ],
+      "check_paths": [
+        "C:/Program Files/HandBrake/HandBrake.exe"
+      ]
+    },
+    {
+      "id": "audacity",
+      "names": {
+        "fr": "Audacity",
+        "en": "Audacity"
+      },
+      "description": {
+        "fr": "Éditeur et enregistreur audio multi-pistes",
+        "en": "Multi-track audio editor and recorder"
+      },
+      "short_name": "AUD",
+      "color": "#0000CC",
+      "icon_path": "icons/audacity.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XP8K0J757HHRDW",
+      "official_url": "https://www.audacityteam.org/",
+      "winget_id": "Audacity.Audacity",
+      "category": "media",
+      "registry_names": [
+        "Audacity"
+      ],
+      "check_paths": [
+        "C:/Program Files/Audacity/Audacity.exe",
+        "C:/Program Files (x86)/Audacity/Audacity.exe"
+      ]
+    },
+    {
+      "id": "paintnet",
+      "names": {
+        "fr": "Paint.NET",
+        "en": "Paint.NET"
+      },
+      "description": {
+        "fr": "Éditeur d'images et de photos gratuit et puissant",
+        "en": "Free and powerful image and photo editor"
+      },
+      "short_name": "PDN",
+      "color": "#336699",
+      "icon_path": "icons/paintnet.png",
+      "official_url": "https://www.getpaint.net/",
+      "winget_id": "dotPDNLLC.paint.net",
+      "category": "media",
+      "registry_names": [
+        "paint.net"
+      ],
+      "check_paths": [
+        "C:/Program Files/paint.net/paintdotnet.exe"
+      ]
+    },
+    {
+      "id": "filezilla",
+      "names": {
+        "fr": "FileZilla",
+        "en": "FileZilla"
+      },
+      "description": {
+        "fr": "Client FTP, FTPS et SFTP rapide et fiable",
+        "en": "Fast and reliable FTP, FTPS and SFTP client"
+      },
+      "short_name": "FZ",
+      "color": "#B90000",
+      "icon_path": "icons/filezilla.png",
+      "official_url": "https://filezilla-project.org/",
+      "winget_id": "TimKosse.FileZillaClient",
+      "category": "dev_tools",
+      "registry_names": [
+        "FileZilla Client"
+      ],
+      "check_paths": [
+        "C:/Program Files/FileZilla FTP Client/filezilla.exe"
+      ]
+    },
+    {
+      "id": "notepadplusplus",
+      "names": {
+        "fr": "Notepad++",
+        "en": "Notepad++"
+      },
+      "description": {
+        "fr": "Éditeur de code source léger et très populaire",
+        "en": "Lightweight and popular source code editor"
+      },
+      "short_name": "NPP",
+      "color": "#90E090",
+      "icon_path": "icons/notepadplusplus.png",
+      "official_url": "https://notepad-plus-plus.org/",
+      "winget_id": "Notepad++.Notepad++",
+      "category": "dev_tools",
+      "registry_names": [
+        "Notepad++"
+      ],
+      "check_paths": [
+        "C:/Program Files/Notepad++/notepad++.exe",
+        "C:/Program Files (x86)/Notepad++/notepad++.exe"
+      ]
+    },
+    {
+      "id": "winscp",
+      "names": {
+        "fr": "WinSCP",
+        "en": "WinSCP"
+      },
+      "description": {
+        "fr": "Client SFTP, FTP, WebDAV et SCP populaire",
+        "en": "Popular SFTP, FTP, WebDAV, Amazon S3 and SCP client"
+      },
+      "short_name": "SCP",
+      "color": "#181818",
+      "icon_path": "icons/winscp.png",
+      "official_url": "https://winscp.net/",
+      "winget_id": "WinSCP.WinSCP",
+      "category": "dev_tools",
+      "registry_names": [
+        "WinSCP"
+      ],
+      "check_paths": [
+        "C:/Program Files (x86)/WinSCP/WinSCP.exe",
+        "C:/Program Files/WinSCP/WinSCP.exe"
+      ]
+    },
+    {
+      "id": "putty",
+      "names": {
+        "fr": "PuTTY",
+        "en": "PuTTY"
+      },
+      "description": {
+        "fr": "Client SSH et Telnet gratuit",
+        "en": "Free SSH and Telnet client"
+      },
+      "short_name": "PTY",
+      "color": "#000000",
+      "icon_path": "icons/putty.png",
+      "store_url": "ms-windows-store://pdp/?ProductId=XPFNZKSKLBP7RJ",
+      "official_url": "https://www.chiark.greenend.org.uk/~sgtatham/putty/",
+      "winget_id": "PuTTY.PuTTY",
+      "category": "dev_tools",
+      "registry_names": [
+        "PuTTY"
+      ],
+      "check_paths": [
+        "C:/Program Files/PuTTY/putty.exe",
+        "C:/Program Files (x86)/PuTTY/putty.exe"
       ]
     }
   ]

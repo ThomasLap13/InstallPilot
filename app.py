@@ -34,6 +34,7 @@ class App:
         self._cat_sections: dict = {}
         self._selections: dict   = dict(i18n._saved_selections)
         self._refresh_cancelled  = threading.Event()
+        self._current_ncols = 0
 
         self._all_apps   = load_apps()
         _cats = group_apps_by_category(self._all_apps)
@@ -41,6 +42,19 @@ class App:
 
         self._build()
         self.refresh_statuses()
+
+        self.root.bind("<Configure>", self._on_resize)
+
+    def _on_resize(self, event):
+        if event.widget == self.root:
+            w = self.root.winfo_width()
+            content_w = w - self._SIDEBAR_W
+            if content_w > 100:
+                ncols = max(1, content_w // 450)
+                if ncols != self._current_ncols and self._current_ncols != 0:
+                    if self._search_after:
+                        self.root.after_cancel(self._search_after)
+                    self._search_after = self.root.after(300, self._refresh_content)
 
     def _build(self):
         self.root.configure(fg_color=T["bg"])
@@ -297,7 +311,12 @@ class App:
         self._update_counter()
 
     def _render_all_grid(self, search: str):
-        NCOLS = 3
+        w = self.root.winfo_width()
+        content_w = w - self._SIDEBAR_W if w > self._SIDEBAR_W else w
+        if content_w < 100: content_w = 760
+        NCOLS = max(1, content_w // 450)
+        self._current_ncols = NCOLS
+
         outer = ctk.CTkFrame(self._scroll, fg_color="transparent")
         outer.pack(fill="both", expand=True, padx=4, pady=4)
         for col in range(NCOLS):
@@ -307,12 +326,20 @@ class App:
                    for k, apps in self._active_cats]
         visible = [(k, apps) for k, apps in visible if apps]
 
-        for idx, (cat_key, cat_apps) in enumerate(visible):
-            section = ctk.CTkFrame(outer, fg_color="transparent")
-            section.grid(row=idx // NCOLS, column=idx % NCOLS,
-                         sticky="new", padx=(0, 12), pady=(0, 20))
+        col_heights = [0] * NCOLS
+        col_frames = []
+        for c in range(NCOLS):
+            f = ctk.CTkFrame(outer, fg_color="transparent")
+            f.grid(row=0, column=c, sticky="new", padx=10, pady=0)
+            col_frames.append(f)
+
+        for cat_key, cat_apps in visible:
+            min_c = col_heights.index(min(col_heights))
+            section = ctk.CTkFrame(col_frames[min_c], fg_color="transparent")
+            section.pack(fill="x", pady=(0, 20))
             self._cat_sections[cat_key] = section
             self._render_category_block(cat_key, cat_apps, two_col=False, parent=section)
+            col_heights[min_c] += 40 + len(cat_apps) * 45
 
     def _render_category_block(self, cat_key: str, cat_apps: list,
                                two_col: bool, parent=None):
@@ -402,6 +429,14 @@ class App:
 
         right = ctk.CTkFrame(footer, fg_color="transparent")
         right.pack(side="right", fill="y", padx=(0, 24))
+
+        self.update_all_btn = ctk.CTkButton(
+            right, text=tr("update_all"), height=34, width=130,
+            fg_color=T["accent"], hover_color=T["accent_hv"],
+            text_color=T["accent_fg"],
+            font=("Segoe UI", 11, "bold"), corner_radius=6,
+            command=self._run_update_all)
+        self.update_all_btn.pack(side="left", padx=(0, 10))
 
         self.check_btn = ctk.CTkButton(
             right, text=tr("check_now"), height=34, width=100,
@@ -554,6 +589,10 @@ class App:
 
         if installer_rows:
             InstallerWindow(self.root, installer_rows, on_done=self.refresh_statuses)
+
+    def _run_update_all(self):
+        from installer_window import UpdaterWindow
+        UpdaterWindow(self.root, on_done=self.refresh_statuses)
 
     def _toggle_controls(self, disabled):
         try:

@@ -188,7 +188,7 @@ class AppRow:
 
     def _build(self):
         inner = ctk.CTkFrame(self.frame, fg_color="transparent")
-        inner.pack(fill="both", expand=True, padx=6, pady=3)
+        inner.pack(fill="both", expand=True, padx=4, pady=1)
 
         self.check = ctk.CTkCheckBox(
             inner, variable=self.selected, text="",

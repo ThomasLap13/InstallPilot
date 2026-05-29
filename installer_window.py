@@ -13,7 +13,7 @@ import customtkinter as ctk
 from config import _SSL_CTX
 from i18n import T, tr, app_name
 from installer_utils import (
-    _resolve_download_url, _cleanup_after_proc, _silent_cmd, _generate_bat_script
+    _resolve_download_url, _cleanup_after_proc, _silent_cmd, _generate_bat_script, _generate_ninite_script
 )
 from utils import open_url
 
@@ -155,42 +155,62 @@ class InstallerWindow:
     # ── Worker ────────────────────────────────────────────────────────────────
 
     def _worker(self):
-        total      = len(self.exe_rows)
-        done_count = [0]
-        count_lock = threading.Lock()
-
-        def install_one(row):
-            app_id = row.app["id"]
-            if self._cancelled.is_set():
-                self._set_state(app_id, "error", tr("inst_err"))
-            else:
-                self._set_state(app_id, "active", "")
-                app = row.app
-                if app.get("winget_id") or row.get_source() == "store":
-                    ok = self._winget_install(row)
-                else:
-                    url = _resolve_download_url(app)
-                    ok  = self._download_install(row, url) if url else self._open_web(row)
-                self._results[app_id] = ok
-                final_text = tr("inst_ok") if ok else (
-                    f"{tr('inst_err')}: {self._errors[app_id]}"
-                    if self._errors.get(app_id) else tr("inst_err"))
-                self._set_state(app_id, "done" if ok else "error", final_text)
-            with count_lock:
-                done_count[0] += 1
-                d, t = done_count[0], total
-            try:
-                self.win.after(0, lambda dv=d, tv=t: self._apply_global(dv, tv))
-            except Exception:
-                pass
-
-        max_w = min(3, total)
-        with concurrent.futures.ThreadPoolExecutor(max_workers=max_w) as pool:
-            concurrent.futures.wait([pool.submit(install_one, r) for r in self.exe_rows])
         try:
-            self.win.after(0, self._on_all_done)
-        except Exception:
-            pass
+            self.win.after(0, lambda: self._global_lbl.configure(text="Génération du script..."))
+            
+            script_path = _generate_ninite_script(self.exe_rows)
+            self._temp_dir = os.path.dirname(script_path)
+            
+            self.win.after(0, lambda: (
+                self._global_pb.configure(mode="indeterminate"),
+                self._global_pb.start(),
+                self._global_lbl.configure(text="Installation silencieuse en arrière-plan...")
+            ))
+            
+            for row in self.exe_rows:
+                app_id = row.app["id"]
+                self.win.after(0, lambda a=app_id: (
+                    self._row_data[a]["pb"].configure(mode="indeterminate"),
+                    self._row_data[a]["pb"].start(),
+                    self._row_data[a]["status_lbl"].configure(text="En attente (PowerShell)", text_color=T["fg"])
+                ))
+            
+            import ctypes
+            ctypes.windll.shell32.ShellExecuteW(
+                None, "runas", "powershell.exe", 
+                f"-ExecutionPolicy Bypass -WindowStyle Hidden -File \"{script_path}\"", 
+                None, 0
+            )
+            
+            self.win.after(1000, self._poll_ninite_done)
+        except Exception as e:
+            self.win.after(0, lambda err=e: messagebox.showerror("Erreur", f"Échec: {str(err)}", parent=self.win))
+            self.win.after(0, self._on_cancel)
+
+    def _poll_ninite_done(self):
+        import os
+        if not getattr(self, "_temp_dir", None) or not os.path.exists(self._temp_dir):
+            self.win.after(0, lambda: self._global_pb.stop())
+            self._on_all_done_ninite()
+        else:
+            self.win.after(1000, self._poll_ninite_done)
+
+    def _on_all_done_ninite(self):
+        self._done = True
+        self._global_lbl.configure(text="Toutes les installations sont terminées !")
+        self._global_pb.configure(mode="determinate")
+        self._global_pb.set(1.0)
+        self._action_btn.configure(text=tr("inst_close"), command=self._close_and_refresh)
+        
+        for row in self.exe_rows:
+            app_id = row.app["id"]
+            self.win.after(0, lambda a=app_id: (
+                self._row_data[a]["pb"].stop(),
+                self._row_data[a]["pb"].configure(mode="determinate"),
+                self._row_data[a]["pb"].set(1.0),
+                self._row_data[a]["icon_lbl"].configure(text="✓", text_color=T["installed"]),
+                self._row_data[a]["status_lbl"].configure(text="Terminé", text_color=T["installed"])
+            ))
 
     def _add_proc(self, proc):
         with self._procs_lock:
@@ -460,6 +480,209 @@ class InstallerWindow:
                     proc.terminate()
                 except Exception:
                     pass
+        self.win.destroy()
+
+    def _on_close_request(self):
+        if self._done:
+            self._close_and_refresh()
+        else:
+            self._on_cancel()
+
+class UpdaterWindow:
+    _W = 640
+
+    def __init__(self, parent, on_done=None):
+        self.parent = parent
+        self._on_done_cb = on_done
+        self._cancelled = threading.Event()
+        self._updates = []
+        self._checkboxes = {}
+        
+        self.win = ctk.CTkToplevel(parent)
+        self.win.title("Mises à jour")
+        self.win.geometry(f"{self._W}x400")
+        self.win.resizable(False, False)
+        self.win.configure(fg_color=T["bg"])
+        self.win.grab_set()
+        self.win.protocol("WM_DELETE_WINDOW", self._on_close_request)
+        
+        try:
+            import pywinstyles
+            pywinstyles.apply_style(self.win, "mica")
+        except Exception:
+            pass
+
+        self._done = False
+        self._build_initial()
+        threading.Thread(target=self._search_updates, daemon=True).start()
+
+    def _build_initial(self):
+        self.hdr = ctk.CTkFrame(self.win, fg_color=T["surface"], corner_radius=0, height=60)
+        self.hdr.pack(fill="x")
+        self.hdr.pack_propagate(False)
+        ctk.CTkLabel(self.hdr, text="Mises à jour",
+                     font=("Segoe UI", 14, "bold"),
+                     text_color=T["fg"]).pack(padx=24, pady=16, anchor="w")
+
+        ctk.CTkFrame(self.win, fg_color=T["border"], height=1, corner_radius=0).pack(fill="x")
+
+        self.body = ctk.CTkFrame(self.win, fg_color=T["bg"], corner_radius=0)
+        self.body.pack(fill="both", expand=True)
+
+        self._lbl = ctk.CTkLabel(self.body, text="Recherche des mises à jour disponibles...", font=("Segoe UI", 12), text_color=T["fg"])
+        self._lbl.pack(pady=(50, 10))
+
+        self._pb = ctk.CTkProgressBar(self.body, width=400, height=10, progress_color=T["accent"], fg_color=T["border"])
+        self._pb.configure(mode="indeterminate")
+        self._pb.start()
+        self._pb.pack(pady=10)
+
+        self.footer = ctk.CTkFrame(self.win, fg_color=T["surface2"], corner_radius=0, height=60)
+        self.footer.pack(fill="x", side="bottom")
+        self.footer.pack_propagate(False)
+
+        self._action_btn = ctk.CTkButton(
+            self.footer, text=tr("inst_cancel"),
+            fg_color=T["btn_sec"], hover_color=T["btn_sec_hv"],
+            text_color=T["btn_sec_fg"],
+            command=self._on_cancel,
+            height=34, corner_radius=6, font=("Segoe UI", 11))
+        self._action_btn.pack(side="right", padx=24, pady=13)
+
+        self._update_btn = ctk.CTkButton(
+            self.footer, text="Mettre à jour la sélection",
+            fg_color=T["accent"], hover_color=T["accent_hv"],
+            text_color=T["accent_fg"],
+            command=self._start_selective_update,
+            height=34, corner_radius=6, font=("Segoe UI", 11, "bold"))
+
+    def _search_updates(self):
+        try:
+            import subprocess, re
+            proc = subprocess.run(["winget", "upgrade"], capture_output=True, text=True, creationflags=subprocess.CREATE_NO_WINDOW)
+            lines = proc.stdout.splitlines()
+            updates = []
+            parsing = False
+            for line in lines:
+                if line.startswith("---"):
+                    parsing = True
+                    continue
+                if parsing:
+                    if not line.strip() or "upgrades available" in line:
+                        continue
+                    parts = re.split(r'\s{2,}', line.strip())
+                    if len(parts) >= 4:
+                        updates.append({
+                            "name": parts[0],
+                            "id": parts[1],
+                            "version": parts[2],
+                            "available": parts[3]
+                        })
+            self._updates = updates
+            self.win.after(0, self._show_selection_ui)
+        except Exception as e:
+            self.win.after(0, lambda: (
+                self._pb.stop(),
+                self._lbl.configure(text=f"Erreur: {e}"),
+                self._action_btn.configure(text=tr("inst_close"))
+            ))
+
+    def _show_selection_ui(self):
+        self._pb.stop()
+        self._pb.pack_forget()
+        self._lbl.pack_forget()
+
+        if not self._updates:
+            self._lbl.configure(text="Toutes vos applications sont à jour !")
+            self._lbl.pack(pady=(50, 10))
+            self._action_btn.configure(text=tr("inst_close"), command=self._close_and_refresh)
+            return
+
+        scroll = ctk.CTkScrollableFrame(self.body, fg_color="transparent", corner_radius=0,
+                                        scrollbar_button_color=T["scrollbar"],
+                                        scrollbar_button_hover_color=T["fg2"])
+        scroll.pack(fill="both", expand=True, padx=2, pady=2)
+
+        for up in self._updates:
+            row = ctk.CTkFrame(scroll, fg_color=T["surface"], corner_radius=6, height=40)
+            row.pack(fill="x", padx=10, pady=4)
+            row.pack_propagate(False)
+
+            var = ctk.StringVar(value="on")
+            cb = ctk.CTkCheckBox(row, text="", variable=var, onvalue="on", offvalue="off",
+                                 width=24, checkbox_width=20, checkbox_height=20,
+                                 fg_color=T["accent"], hover_color=T["accent_hv"], border_color=T["fg3"])
+            cb.pack(side="left", padx=(10, 0))
+            self._checkboxes[up["id"]] = var
+
+            ctk.CTkLabel(row, text=up["name"], font=("Segoe UI", 12, "bold"), text_color=T["fg"]).pack(side="left", padx=10)
+            
+            v_text = f"{up['version']}  →  {up['available']}"
+            ctk.CTkLabel(row, text=v_text, font=("Segoe UI", 11), text_color=T["fg3"]).pack(side="right", padx=14)
+
+        self._update_btn.pack(side="right", padx=(0, 10), pady=13)
+
+    def _start_selective_update(self):
+        selected_ids = [uid for uid, var in self._checkboxes.items() if var.get() == "on"]
+        if not selected_ids:
+            return
+
+        for widget in self.body.winfo_children():
+            widget.destroy()
+
+        self._update_btn.pack_forget()
+        self._action_btn.configure(state="disabled")
+
+        self._lbl = ctk.CTkLabel(self.body, text="Mise à jour en arrière-plan...", font=("Segoe UI", 12), text_color=T["fg"])
+        self._lbl.pack(pady=(50, 10))
+
+        self._pb = ctk.CTkProgressBar(self.body, width=400, height=10, progress_color=T["accent"], fg_color=T["border"])
+        self._pb.configure(mode="indeterminate")
+        self._pb.start()
+        self._pb.pack(pady=10)
+
+        threading.Thread(target=self._worker_update, args=(selected_ids,), daemon=True).start()
+
+    def _worker_update(self, selected_ids):
+        try:
+            from installer_utils import _generate_selective_update_script
+            import os, ctypes
+            
+            script_path = _generate_selective_update_script(selected_ids)
+            self._temp_dir = os.path.dirname(script_path)
+            
+            ctypes.windll.shell32.ShellExecuteW(
+                None, "runas", "powershell.exe", 
+                f"-ExecutionPolicy Bypass -WindowStyle Hidden -File \"{script_path}\"", 
+                None, 0
+            )
+            
+            self.win.after(1000, self._poll_done)
+        except Exception as e:
+            self.win.after(0, lambda: (self._lbl.configure(text=f"Erreur: {e}"), self._pb.stop(), self._action_btn.configure(state="normal")))
+
+    def _poll_done(self):
+        import os
+        if not getattr(self, "_temp_dir", None) or not os.path.exists(self._temp_dir):
+            self.win.after(0, lambda: self._pb.stop())
+            self._on_done()
+        else:
+            self.win.after(1000, self._poll_done)
+
+    def _on_done(self):
+        self._done = True
+        self._lbl.configure(text="Mises à jour terminées avec succès !")
+        self._pb.configure(mode="determinate")
+        self._pb.set(1.0)
+        self._action_btn.configure(state="normal", text=tr("inst_close"), command=self._close_and_refresh)
+
+    def _close_and_refresh(self):
+        self.win.destroy()
+        if self._on_done_cb:
+            self._on_done_cb()
+
+    def _on_cancel(self):
+        self._cancelled.set()
         self.win.destroy()
 
     def _on_close_request(self):

@@ -24,11 +24,11 @@ Nouveau PC ? Réinstallation Windows ? InstallPilot détecte ce qui est déjà l
 | Navigateurs | Chrome, Firefox, Brave |
 | Messagerie | Discord, Teams, WhatsApp |
 | Jeux | Steam, Epic Games |
-| Multimédia | Spotify, Apple Music, Deezer, Plex, VLC, OBS Studio |
+| Multimédia | Spotify, Apple Music, Deezer, Plex, VLC, OBS Studio, HandBrake, Audacity, Paint.NET |
 | Productivité | Outlook, Notion, LibreOffice, Antigravity |
 | Sécurité | KeePass |
-| Utilitaires | PowerToys, 7-Zip, Everything, Lenovo Vantage, NVIDIA App, CPU-Z |
-| Dev | VS Code, Git, Python, Node.js, Docker |
+| Utilitaires | PowerToys, 7-Zip, Everything, Lenovo Vantage, NVIDIA App, CPU-Z, TeamViewer, WinRAR, Synology Drive |
+| Dev | VS Code, Git, Python, Node.js, Docker, FileZilla, Notepad++, WinSCP, PuTTY |
 
 ---
 
